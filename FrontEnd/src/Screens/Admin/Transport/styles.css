@@ -1,0 +1,62 @@
+body {
+  color: black;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  width: 98%;
+  padding: 50px;
+}
+.top-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+}
+.search {
+  display: flex;
+  width: 30%;
+}
+.button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  width: 100%;
+}
+.add-btn {
+  color: black;
+  font-size: 16px;
+  background-color: rgb(239, 220, 18);
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.pdf-btn {
+  color: black;
+  font-size: 15px;
+  background-color: rgb(239, 18, 18);
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-right: 10px;
+  margin-left: auto;
+  align-content: end;
+}
+.table-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 20px auto;
+}
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+}
