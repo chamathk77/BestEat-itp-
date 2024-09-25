@@ -117,3 +117,83 @@ app.put("/admin/updatefood/:id", (req, res) => {
 
 
 //-----------------------------------------------------------------------------------------------------------
+
+//-------------------------------------------Savindi-----------------------------------------------------------------
+
+app.get("/items", (req,res)=>{
+  const q = "SELECT * FROM items"
+  db.query(q,(err,data)=>{
+      if(err) return res.json(err)
+      return res.json(data)
+  })
+})
+
+app.post("/items", (req, res) => {
+  const q = "INSERT INTO items (`name`, `category`, `unit_price`, `quantity`) VALUES (?)";
+  const values = [
+      req.body.name,
+      req.body.category,
+      req.body.unit_price,
+      req.body.quantity,
+  ];
+
+  db.query(q, [values], (err, data) => {
+      if (err) return res.json(err);
+      return res.json("Item has addede successfully");
+  });
+});
+
+app.delete("/items/:id", (req,res)=>{
+  const itemId = req.params.id;
+  const q = "DELETE FROM items WHERE id = ?"
+
+  db.query(q, [itemId], (err, data) => {
+      if (err) return res.json(err);
+      return res.json("Item has been deleted successfully");
+  });
+})
+
+app.put("/items/:id", (req,res)=>{
+  const itemId = req.params.id;
+  const q = "UPDATE items SET name = ?, category = ?, unit_price = ?, quantity = ?, rquantity = ?  WHERE id = ?";
+
+  const values=[
+      req.body.name,
+      req.body.category,
+      req.body.unit_price,
+      req.body.quantity,
+      req.body.rquantity,
+      
+  ]
+
+  db.query(q, [...values,itemId], (err, data) => {
+      if (err) return res.json(err);
+      return res.json("Item has been updated successfully");
+  });
+});
+
+app.put("/items/:id", (req, res) => {
+  const itemId = req.params.id;
+  const q =
+    "UPDATE items SET rquantity = ? WHERE id = ?";
+
+  const rquantity = req.body.rquantity;
+
+  console.log("Received rquantity: ", rquantity); // Log the received value
+  console.log("Item ID: ", itemId); // Log the item ID
+
+  if (!rquantity || isNaN(rquantity)) {
+    return res.status(400).json("Invalid remaining quantity value");
+  }
+
+  db.query(q, [rquantity, itemId], (err, data) => {
+    if (err) {
+      console.error("Error updating the database: ", err); // Log database error
+      return res.json(err);
+    }
+    return res.json("Remaining quantity updated successfully!");
+  });
+});
+
+
+//-----------------------------------------------------------------------------------------------------------
