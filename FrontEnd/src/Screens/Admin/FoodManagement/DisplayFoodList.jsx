@@ -261,7 +261,8 @@ function DisplayFoodList() {
               </button>
               <button
                 onClick={() => deleteBook(foodItem.id)}
-                style={{
+                style={
+                  {
                   padding: "10px 15px",
                   backgroundColor: "#f44336",
                   color: "white",
@@ -270,6 +271,8 @@ function DisplayFoodList() {
                   cursor: "pointer",
                   fontSize: "16px",
                   fontWeight: "500",
+
+
                 }}
               >
                 Delete

@@ -5,9 +5,15 @@ import CustomAlert from "../../../Components/CommonAlert/CommonAlert";
 import { useSelector } from "react-redux";
 
 function UpdateFood() {
-  const foodName_state = useSelector((state) => state.Login.selectedFood.foodName);
-  const foodCategory_state = useSelector((state) => state.Login.selectedFood.foodCategory);
-  const imageUrl_state = useSelector((state) => state.Login.selectedFood.imageUrl);
+  const foodName_state = useSelector(
+    (state) => state.Login.selectedFood.foodName
+  );
+  const foodCategory_state = useSelector(
+    (state) => state.Login.selectedFood.foodCategory
+  );
+  const imageUrl_state = useSelector(
+    (state) => state.Login.selectedFood.imageUrl
+  );
   const price_state = useSelector((state) => state.Login.selectedFood.price);
   const id = window.location.pathname.split("/")[3];
 
@@ -36,16 +42,21 @@ function UpdateFood() {
   const handleClick = async (e) => {
     e.preventDefault();
     try {
-      const updatedFood = {
-        name: foodName,
-        category: foodCategory,
-        image: imageUrl,
-        price: price,
-      };
+      if (foodName && foodCategory && imageUrl && price) {
+        const updatedFood = {
+          name: foodName,
+          category: foodCategory,
+          image: imageUrl,
+          price: price,
+        };
 
-      console.log("updatedFood--------------", updatedFood);
-      await axios.put("http://localhost:8800/admin/updatefood/" + id, updatedFood);
-      navigator("/admin/displayfoodlist");
+        console.log("updatedFood--------------", updatedFood);
+        await axios.put(
+          "http://localhost:8800/admin/updatefood/" + id,
+          updatedFood
+        );
+        navigator("/admin/displayfoodlist");
+      }
     } catch (error) {
       console.log(error);
       setAlertTopic("Error");

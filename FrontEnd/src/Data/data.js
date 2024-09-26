@@ -190,37 +190,37 @@ export const Admincategories = [
   },
   {
     id: 2,
-    name: 'Pizza',
+    name: 'Employee Management',
     image:
       'https://duyt4h9nfnj50.cloudfront.net/new_search_home_eats_icon/Pizza_BrowseHome@3x.png',
   },
   {
     id: 3,
-    name: 'Wings',
+    name: 'Transport Manager',
     image:
       'https://duyt4h9nfnj50.cloudfront.net/new_search_home_eats_icon/Wings_BrowseHome@3x.png',
   },
   {
     id: 4,
-    name: 'Indian',
+    name: 'Cutomer Care Manager',
     image:
       'https://duyt4h9nfnj50.cloudfront.net/new_search_home_eats_icon/Indian_BrowseHome@3x.png',
   },
   {
     id: 5,
-    name: 'Latest Deals',
+    name: 'Finance manager',
     image:
       'https://duyt4h9nfnj50.cloudfront.net/new_search_home_eats_icon/Deals_BrowseHome@3x.png',
   },
   {
     id: 6,
-    name: 'Restaurant Rewards',
+    name: 'Inventory Manager',
     image:
       'https://duyt4h9nfnj50.cloudfront.net/new_search_home_eats_icon/RestoRewards_BrowseHome@3x.png',
   },
   {
     id: 7,
-    name: 'Best Overall',
+    name: 'Marketing Manager',
     image:
       'https://duyt4h9nfnj50.cloudfront.net/new_search_home_eats_icon/TopEats_Browse%20Home@3x.png',
   },
@@ -237,3 +237,4 @@ export const Admincategories = [
     'https://media.istockphoto.com/id/1160719489/vector/yellow-or-orange-motor-car-with-food-delivery-sign-cartoon-style.jpg?s=612x612&w=0&k=20&c=X4vGgVpy6It7JCI_yqfJbhP8g2olwYukXkrY5DzPQX0=',
 },
 ];
+
