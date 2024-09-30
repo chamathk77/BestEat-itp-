@@ -116,6 +116,19 @@ app.put("/admin/updatefood/:id", (req, res) => {
 });
 
 
+app.get("/Users/Login", (req, res) => {
+  const sqlSelect = "SELECT * FROM customers";
+
+  db.query(sqlSelect, (err, data) => {
+    if (err) {
+      console.log("Error occurred:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    return res.status(200).json(data);
+  });
+});
+
+
 //-----------------------------------------------------------------------------------------------------------
 
 //-------------------------------------------Savindi-----------------------------------------------------------------

@@ -1,9 +1,7 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { UpdateUserName } from "../../Redux/reducers/LoginReducer";
-
-
 
 function SignupPage() {
   const [username, setUsername] = useState("");
@@ -125,32 +123,41 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     height: '100vh',
-    backgroundColor: '#f7f7f7',
+    backgroundColor: '#fffaf0', // Light background for modern theme
+    fontFamily: "'Poppins', sans-serif", // Modern, clean font
+    padding: '20px', // Ensure proper spacing on all sides
+    boxSizing: 'border-box',
   },
   formContainer: {
-    maxWidth: '400px',
+    maxWidth: '450px',
     width: '100%',
-    padding: '24px',
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    padding: '40px',
+    border: 'none',
+    borderRadius: '12px',
+    boxShadow: '0 10px 20px rgba(0, 0, 0, 0.1)',
     backgroundColor: '#fff',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center', // Ensures the form is centered
+    marginTop: '-50px', // To center vertically, reduce the margin from the top
   },
   title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    marginBottom: '16px',
+    fontSize: '32px',
+    fontWeight: '600',
+    marginBottom: '20px',
     textAlign: 'center',
-    color: '#333',
+    color: '#FF6F00', // Orange theme
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
+    gap: '20px',
+    width: '100%', // Full width of the container
   },
   inputGroup: {
     display: 'flex',
-    gap: '16px',
+    gap: '20px',
+    width: '100%', // Ensure full width of form
   },
   inputWrapper: {
     flex: 1,
@@ -162,24 +169,31 @@ const styles = {
     marginBottom: '8px',
   },
   input: {
-    padding: '8px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
+    padding: '12px',
+    border: '1px solid #ddd',
+    borderRadius: '8px',
     fontSize: '14px',
     width: '100%',
+    backgroundColor: '#f9f9f9',
+    outline: 'none',
+    transition: 'border 0.3s ease',
+    ':focus': {
+      borderColor: '#FF6F00', // Orange border on focus
+    },
   },
   button: {
     width: '100%',
-    padding: '12px',
-    backgroundColor: '#007bff',
+    padding: '14px',
+    backgroundColor: '#FF6F00', // Orange button
     color: '#fff',
     border: 'none',
-    borderRadius: '4px',
+    borderRadius: '8px',
     fontSize: '16px',
+    fontWeight: '600',
     cursor: 'pointer',
     transition: 'background-color 0.3s',
     ':hover': {
-      backgroundColor: '#0056b3',
+      backgroundColor: '#e65c00',
     },
   },
 };

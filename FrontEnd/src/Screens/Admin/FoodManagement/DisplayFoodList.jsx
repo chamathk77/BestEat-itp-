@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import CustomAlert from "../../../Components/CommonAlert/CommonAlert";
 import { UpdateSelectedFood } from "../../../Redux/reducers/LoginReducer";
 import { useDispatch } from "react-redux";
+
 function DisplayFoodList() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -19,45 +20,28 @@ function DisplayFoodList() {
   const [buttonCount, setButtonCount] = useState(1);
 
   useEffect(() => {
-    try {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get(
-            "http://localhost:8800/dashboard/foods"
-          );
-          console.log("Food Data: ", response.data);
-          setFood(response.data);
-          setFilterdData(response.data);
-        } catch (error) {
-          console.log("Error: ", error);
-
-          setAlertTopic("Error");
-          setAlertDescription("Something went wrong please try again");
-          setShowAlert(true);
-          setButtonCount(2);
-        }
-      };
-      fetchData();
-    } catch (error) {
-      console.log(error);
-    }
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8800/dashboard/foods");
+        console.log("Food Data: ", response.data);
+        setFood(response.data);
+        setFilterdData(response.data);
+      } catch (error) {
+        console.log("Error: ", error);
+        setAlertTopic("Error");
+        setAlertDescription("Something went wrong, please try again");
+        setShowAlert(true);
+        setButtonCount(2);
+      }
+    };
+    fetchData();
   }, []);
 
   function filterType(category) {
-    setFilterdData(
-      food.filter((item) => {
-        return item.category === category;
-      })
-    );
+    setFilterdData(food.filter((item) => item.category === category));
   }
 
   const handleUpdate = (id, name, image, price, category) => {
-    console.log("Updating item with id: ", id);
-    console.log("Updating item with name: ", name);
-    console.log("Updating item with image: ", image);
-    console.log("Updating item with price: ", price);
-    console.log("Updating item with category: ", category);
-
     dispatch(
       UpdateSelectedFood({
         foodName: name,
@@ -66,7 +50,6 @@ function DisplayFoodList() {
         price: price,
       })
     );
-    console.log("Updating item with id: ", id);
     navigate(`/admin/updatefood/${id}`);
   };
 
@@ -76,29 +59,24 @@ function DisplayFoodList() {
       window.location.reload();
     } catch (error) {
       setAlertTopic("Error");
-      setAlertDescription("Something went wrong please try again");
+      setAlertDescription("Something went wrong, please try again");
       setShowAlert(true);
       setButtonCount(1);
-
       console.log(error);
     }
   };
 
   const handlePositiveAction = () => {
-    // Handle the positive action here
     setShowAlert(false);
-    console.log("Positive button clicked");
   };
 
   const handleNegativeAction = () => {
-    // Handle the negative action here
     setShowAlert(false);
-    console.log("Negative button clicked");
   };
 
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
-      {/* alert */}
+      {/* Alert */}
       {showAlert && (
         <CustomAlert
           alertvisible={showAlert}
@@ -121,6 +99,22 @@ function DisplayFoodList() {
       >
         Food Menu List
       </h1>
+
+      {/* Item Count Card */}
+      <div
+        style={{
+          backgroundColor: "#f0f8ff",
+          borderRadius: "10px",
+          padding: "20px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          marginBottom: "20px",
+          textAlign: "center",
+        }}
+      >
+        <h2 style={{ fontSize: "24px", color: "#333" }}>
+          Total Items: {filterdData.length} {filterdData.length === 1 ? "item" : "items"}
+        </h2>
+      </div>
 
       <div className="flex justify-between flex-wrap max-w-[490px]">
         <button
@@ -156,13 +150,7 @@ function DisplayFoodList() {
       </div>
 
       {/* Add New Food Button */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          margin: "20px 0",
-        }}
-      >
+      <div style={{ display: "flex", justifyContent: "flex-end", margin: "20px 0" }}>
         <button
           onClick={() => navigate("/admin/addfood")}
           style={{
@@ -261,8 +249,7 @@ function DisplayFoodList() {
               </button>
               <button
                 onClick={() => deleteBook(foodItem.id)}
-                style={
-                  {
+                style={{
                   padding: "10px 15px",
                   backgroundColor: "#f44336",
                   color: "white",
@@ -271,8 +258,6 @@ function DisplayFoodList() {
                   cursor: "pointer",
                   fontSize: "16px",
                   fontWeight: "500",
-
-
                 }}
               >
                 Delete

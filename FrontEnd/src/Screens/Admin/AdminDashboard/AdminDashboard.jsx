@@ -3,13 +3,17 @@ import { Admincategories } from "../../../Data/data.js";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
+
 function AdminLogin() {
   const navigate = useNavigate();
   const username=useSelector((state)=>state.Login.LoginUser.UserName)
 
+  
+
   const handleButtonPress = (id) => {
 
     console.log("------------------------------------",id);
+    
     if (id === 1) { 
       navigate("/admin/displayfoodlist");
     }
