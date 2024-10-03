@@ -1,5 +1,3 @@
-
-
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import HomePage from "./Screens/HomePage/HomePage";
@@ -14,43 +12,49 @@ import SignupPage from "./Screens/SignUpScreen/SignUpScreen";
 import DisplayFoodList from "./Screens/Admin/FoodManagement/DisplayFoodList";
 import AddFood from "./Screens/Admin/FoodManagement/AddFood";
 import Update from "./Screens/Admin/FoodManagement/UpdateFood";
+import CartList from "./Screens/CartList/CartList";
+import Orders from "./Screens/Orders/Orders";
+import UserProfile from "./Screens/UserProfile/UserProfile";
 const App = () => {
   return (
     <Provider store={store}>
-     
-        <Router>
-          <Routes>
+      <Router>
+        <Routes>
+          {/* ***********************************chamath ***************************************************************/}
 
-            {/* ***********************************chamath ***************************************************************/}
+          {/* log in and sign up */}
 
-            {/* log in and sign up */}
+          <Route path="/" element={<LoginPage />} />
 
-            <Route path="/" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
 
-            <Route path="/signup" element={<SignupPage />} />
+          {/* dashboard */}
+          <Route path="/homepage" element={<HomePage />} />
 
-            {/* dashboard */}
-            <Route path="/homepage" element={<HomePage />} />
+          {/* cart list */}
+          <Route path="/cartlist" element={<CartList />} />
 
-            {/* ------------------------------------------admin ----------------------------------------*/}
-            {/* admin dashboard */}
-            <Route path="/admin/dashboard" element={<AdminLogin />} />
+          {/* oders */}
+          <Route path="/Orders" element={<Orders />} />
+          {/* UserProfile */}
+          <Route path="/profile" element={<UserProfile />} />
+          {/* ------------------------------------------admin ----------------------------------------*/}
+          {/* admin dashboard */}
+          <Route path="/admin/dashboard" element={<AdminLogin />} />
 
-            {/*------- food Management----------- */}
-            {/*display food list*/}
-            <Route path="/admin/displayfoodlist" element={<DisplayFoodList />} />
+          {/*------- food Management----------- */}
+          {/*display food list*/}
+          <Route path="/admin/displayfoodlist" element={<DisplayFoodList />} />
 
-            {/*add food*/}
-            <Route path="/admin/addfood" element={<AddFood />} />
+          {/*add food*/}
+          <Route path="/admin/addfood" element={<AddFood />} />
 
-            {/* update food */}
-            <Route path='/admin/updatefood/:id' element={<Update/>}/>
+          {/* update food */}
+          <Route path="/admin/updatefood/:id" element={<Update />} />
 
-            {/* **************************************************************************************************/}
-
-          </Routes>
-        </Router>
-   
+          {/* **************************************************************************************************/}
+        </Routes>
+      </Router>
     </Provider>
   );
 };

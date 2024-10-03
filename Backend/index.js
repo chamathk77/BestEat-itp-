@@ -1,6 +1,6 @@
 import express from "express";
 import mysql from "mysql";
-import cors from "cors"
+import cors from "cors";
 
 const app = express();
 const port = 8800;
@@ -13,9 +13,8 @@ const dbConfig = {
   database: "besteats",
 };
 
-
 app.use(express.json());
-app.use(cors())
+app.use(cors());
 // Function to handle MySQL connection and reconnection
 let db;
 
@@ -52,7 +51,6 @@ app.get("/", (req, res) => {
   res.send("Hello this is backend!");
 });
 
-
 //-------------------------------------------chamath-----------------------------------------------------------------
 app.get("/dashboard/foods", (req, res) => {
   const sqlSelect = "SELECT * FROM food_menu";
@@ -67,9 +65,15 @@ app.get("/dashboard/foods", (req, res) => {
 });
 
 app.post("/admin/addfood", (req, res) => {
-  const q = "INSERT INTO food_menu(`name`,`category`,`image`,`price`) VALUES (?)";
+  const q =
+    "INSERT INTO food_menu(`name`,`category`,`image`,`price`) VALUES (?)";
 
-  const VALUES = [req.body.name,req.body.category,req.body.image,req.body.price];
+  const VALUES = [
+    req.body.name,
+    req.body.category,
+    req.body.image,
+    req.body.price,
+  ];
 
   db.query(q, [VALUES], (err, data) => {
     if (err) {
@@ -80,7 +84,6 @@ app.post("/admin/addfood", (req, res) => {
     return res.status(200).json("Book has been created successfully");
   });
 });
-
 
 app.delete("/admin/fooddelete/:id", (req, res) => {
   const bookId = req.params.id;
@@ -100,20 +103,29 @@ app.delete("/admin/fooddelete/:id", (req, res) => {
 
 app.put("/admin/updatefood/:id", (req, res) => {
   const bookId = req.params.id;
- 
-  const q = "UPDATE food_menu SET `name` = ?, `category` = ?, `image` = ?, `price` = ? WHERE id = ?";
 
-  const VALUES = [req.body.name,req.body.category,req.body.image,req.body.price];
+  const q =
+    "UPDATE food_menu SET `name` = ?, `category` = ?, `image` = ?, `price` = ? WHERE id = ?";
+
+  const VALUES = [
+    req.body.name,
+    req.body.category,
+    req.body.image,
+    req.body.price,
+  ];
 
   db.query(q, [...VALUES, bookId], (err, data) => {
     if (err) {
       console.log("Error occurred:", err);
       return res.status(500).json({ error: "Database error" });
-    } 
+    }
 
     return res.status(200).json("Book has been updated successfully");
   });
 });
+// customer table--------------------
+
+
 
 
 app.get("/Users/Login", (req, res) => {
@@ -128,67 +140,118 @@ app.get("/Users/Login", (req, res) => {
   });
 });
 
+// order tabele --------------------------
+app.post("/order/display", (req, res) => {
+  const { username } = req.body; // Get username from the request body
+
+  if (!username) {
+    return res.status(400).json({ error: "Username is required" });
+  }
+
+  const sqlSelect = "SELECT * FROM orders WHERE username = ?";
+
+  db.query(sqlSelect, [username], (err, data) => {
+    if (err) {
+      console.log("Error occurred:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    if (data.length === 0) {
+      return res.status(404).json({ message: "No orders found for the user" });
+    }
+    return res.status(200).json(data);
+  });
+});
+
+
+
+app.post("/order/insert", (req, res) => {
+  const { username, TotalAmount, OrderDetails,address } = req.body; // Destructure the request body
+
+  // Prepare the SQL query for inserting an order
+  const q =
+    "INSERT INTO Orders (username, TotalAmount, OrderDetails, is_delivered, address) VALUES (?, ?, ?, ?,?)";
+
+  // Define values for the SQL query
+  const values = [
+    username,
+    TotalAmount,
+    JSON.stringify(OrderDetails), // Convert the order details to a JSON string
+    false,
+    address
+     // Default value for is_delivered
+  ];
+
+  // Execute the query
+  db.query(q, values, (err, data) => {
+    if (err) {
+      console.log("Error occurred:", err);
+      return res.status(500).json(err);
+      // Return a 500 status on error
+    }
+    return res.status(201).json("true"); // Return a success message
+  });
+});
 
 //-----------------------------------------------------------------------------------------------------------
 
 //-------------------------------------------Savindi-----------------------------------------------------------------
 
-app.get("/items", (req,res)=>{
-  const q = "SELECT * FROM items"
-  db.query(q,(err,data)=>{
-      if(err) return res.json(err)
-      return res.json(data)
-  })
-})
-
-app.post("/items", (req, res) => {
-  const q = "INSERT INTO items (`name`, `category`, `unit_price`, `quantity`) VALUES (?)";
-  const values = [
-      req.body.name,
-      req.body.category,
-      req.body.unit_price,
-      req.body.quantity,
-  ];
-
-  db.query(q, [values], (err, data) => {
-      if (err) return res.json(err);
-      return res.json("Item has addede successfully");
+app.get("/items", (req, res) => {
+  const q = "SELECT * FROM items";
+  db.query(q, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
   });
 });
 
-app.delete("/items/:id", (req,res)=>{
+app.post("/items", (req, res) => {
+  const q =
+    "INSERT INTO items (`name`, `category`, `unit_price`, `quantity`) VALUES (?)";
+  const values = [
+    req.body.name,
+    req.body.category,
+    req.body.unit_price,
+    req.body.quantity,
+  ];
+
+  db.query(q, [values], (err, data) => {
+    if (err) return res.json(err);
+    return res.json("Item has addede successfully");
+  });
+});
+
+app.delete("/items/:id", (req, res) => {
   const itemId = req.params.id;
-  const q = "DELETE FROM items WHERE id = ?"
+  const q = "DELETE FROM items WHERE id = ?";
 
   db.query(q, [itemId], (err, data) => {
-      if (err) return res.json(err);
-      return res.json("Item has been deleted successfully");
-  });
-})
-
-app.put("/items/:id", (req,res)=>{
-  const itemId = req.params.id;
-  const q = "UPDATE items SET name = ?, category = ?, unit_price = ?, quantity = ?, rquantity = ?  WHERE id = ?";
-
-  const values=[
-      req.body.name,
-      req.body.category,
-      req.body.unit_price,
-      req.body.quantity,
-      req.body.rquantity,
-      
-  ]
-
-  db.query(q, [...values,itemId], (err, data) => {
-      if (err) return res.json(err);
-      return res.json("Item has been updated successfully");
+    if (err) return res.json(err);
+    return res.json("Item has been deleted successfully");
   });
 });
 
 app.put("/items/:id", (req, res) => {
   const itemId = req.params.id;
   const q =
-    "UPDATE items SET rquantity = ? WHERE id = ?";
+    "UPDATE items SET name = ?, category = ?, unit_price = ?, quantity = ?, rquantity = ?  WHERE id = ?";
+
+  const values = [
+    req.body.name,
+    req.body.category,
+    req.body.unit_price,
+    req.body.quantity,
+    req.body.rquantity,
+  ];
+
+  db.query(q, [...values, itemId], (err, data) => {
+    if (err) return res.json(err);
+    return res.json("Item has been updated successfully");
+  });
+});
+
+app.put("/items/:id", (req, res) => {
+  const itemId = req.params.id;
+  const q = "UPDATE items SET rquantity = ? WHERE id = ?";
 
   const rquantity = req.body.rquantity;
 
@@ -207,6 +270,5 @@ app.put("/items/:id", (req, res) => {
     return res.json("Remaining quantity updated successfully!");
   });
 });
-
 
 //-----------------------------------------------------------------------------------------------------------

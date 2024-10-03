@@ -2,10 +2,15 @@ import React, { useEffect, useState } from "react";
 // import { data, categories } from "../Data/data.js";
 import axios from "axios";
 import CustomAlert from "../Components/CommonAlert/CommonAlert.jsx";
+import {setFoodList} from "../Redux/reducers/FoodOrderReducer.js";
+import { useDispatch } from "react-redux";
+import {useSelector} from "react-redux";
+
 
 const Food = () => {
   // console.log(data)
   // console.log(categories)
+  const dispatch = useDispatch();
   const [fulldata, setfulldata] = useState([]);
   const [foods, setfoods] = useState([]);
 
@@ -13,6 +18,10 @@ const Food = () => {
   const [alertDescription, setAlertDescription] = useState("");
   const [alertTopic, setAlertTopic] = useState("");
   const [buttonCount, setButtonCount] = useState(1);
+
+  const cart = useSelector((state) => state.Order.order.foodList);
+
+  // const [cart, setCart] = useState([]);
 
   useEffect(() => {
     try {
@@ -41,11 +50,28 @@ const Food = () => {
     }
   }, []);
 
+  useEffect(() => {
+
+
+
+   
+  console.log("-----------------------",cart)
+
+    
+
+  }, [cart]);
+
+
+  useEffect(() => {
+    
+    
+  }, [fulldata]);
+
   // filter type
 
   function filterType(category) {
     setfoods(
-        fulldata.filter((item) => {
+      fulldata.filter((item) => {
         return item.category === category;
       })
     );
@@ -53,8 +79,8 @@ const Food = () => {
 
   function filterPrice(price) {
     if (price == "1000") {
-      const NewArry = fulldata.filter((item) => { 
-        return item.price  < price && item.price  > 0;
+      const NewArry = fulldata.filter((item) => {
+        return item.price < price && item.price > 0;
       });
 
       setfoods(NewArry);
@@ -64,8 +90,7 @@ const Food = () => {
 
     if (price == "2000") {
       const NewArry = fulldata.filter((item) => {
-      
-        return item.price < price && item.price  > 1000;
+        return item.price < price && item.price > 1000;
       });
 
       setfoods(NewArry);
@@ -75,8 +100,7 @@ const Food = () => {
 
     if (price == "3000") {
       const NewArry = fulldata.filter((item) => {
-  
-        return item.price  < price && item.price  > 2000;
+        return item.price < price && item.price > 2000;
       });
 
       setfoods(NewArry);
@@ -84,6 +108,29 @@ const Food = () => {
       return;
     }
   }
+
+  const handlebuttonClick = (item) => {
+    console.log("handle button click", item);
+
+    const exist = cart.find((x) => x.id === item.id);
+
+    if (exist) {
+
+      dispatch(setFoodList(
+
+        cart.map((x) =>
+          x.id === item.id ? { ...exist, qty: exist.qty + 1 } : x
+        )
+      ));
+
+    } else {
+
+      dispatch(setFoodList([...cart, { ...item, qty: 1 }]));
+      // setCart([...cart, { ...item, qty: 1 }]);
+    }
+
+
+  };
 
   const handlePositiveAction = () => {
     // Handle the positive action here
@@ -103,16 +150,7 @@ const Food = () => {
         Top Rated Menu Item
       </h1>
 
-      {showAlert && (
-        <CustomAlert
-          alertvisible={showAlert}
-          onPositiveAction={handlePositiveAction}
-          onNegativeAction={handleNegativeAction}
-          alertDescription={alertDescription}
-          alertTitle={alertTopic}
-          buttonCount={buttonCount}
-        />
-      )}
+  
 
       {/* filter row */}
       <div className="flex flex-col lg:flex-row justify-between">
@@ -190,6 +228,7 @@ const Food = () => {
           <div
             key={index}
             className=" border shadow-lg hover:scale-105 duration-300 rounded-lg hover:shadow-2xl hover:cursor-pointer clickable"
+            onClick={() => handlebuttonClick(item)}
           >
             <img
               className="w-full h-[200px] object-cover rounded-t-lg"
@@ -200,7 +239,7 @@ const Food = () => {
               <p className="font-bold">{item.name}</p>
               <p>
                 <span className="bg-orange-500 text-white p-1">
-                  LKR  {item.price}
+                  LKR {item.price}
                 </span>
               </p>
             </div>

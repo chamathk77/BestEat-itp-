@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   AiFillTag,
@@ -9,15 +9,57 @@ import {
 import { BsFillCartFill, BsFillSafeFill } from "react-icons/bs";
 import { TbTruckDelivery } from "react-icons/tb";
 import { FaUserFriends, FaWallet } from "react-icons/fa";
-import { MdFavorite, MdHelp } from "react-icons/md";
-import { useNavigate } from 'react-router-dom';
+import { MdLogout,MdVerifiedUser } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
-
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const [nav, setNav] = useState(false);
   const [delivery, setDelivery] = useState(true);
   const [pickup, setPickup] = useState(false);
+  const [adminLogin, setAdminLogin] = useState(false);
+  const [cartCount, setCartCount] = useState(0); // New state for cart count
+
+  const username = useSelector((state) => state.Login.LoginUser.UserName);
+  const cart = useSelector((state) => state.Order.order.foodList);
+
+  useEffect(() => {
+    console.log(
+      "9999999999999999999999999999999999999999999999999999999999999"
+    );
+
+    let itemCount = 0;
+    cart.forEach((item) => {
+      itemCount += item.qty;
+    });
+    setCartCount(itemCount);
+
+  }, [cart]);
+
+  useEffect(() => {
+    function validateUsername(username) {
+      // Check if the first character is 'A' or 'a'
+      const startsWithA = username[0] === "A" || username[0] === "a";
+
+      // Check if only the first two characters are letters
+      const hasTwoLetters =
+        /^[A-Za-z]{2}/.test(username) && !/[A-Za-z]/.test(username.slice(2));
+
+      return startsWithA && hasTwoLetters;
+    }
+
+    if (validateUsername(username)) {
+      setAdminLogin(true);
+    } else {
+      setAdminLogin(false);
+    }
+  }, [username]);
+
+  // Function to increase cart count
+  const handleAddToCart = () => {
+    setCartCount(cartCount + 1);
+  };
 
   function handleDelivery() {
     setDelivery(true);
@@ -36,16 +78,12 @@ const navigate = useNavigate();
     setNav(!nav);
   }
 
-  function handleLogin() {
-    <Link to="/about" />;
-  }
-
   const handleNavigate = (path) => {
     navigate(path);
   };
 
   return (
-    <div className="ml-4 mr-4 max-w-[1640px] border-gray-950 mx-auto flex justify-between">
+    <div className="ml-4 mr-4 mt-2 max-w-[1640px] border-gray-950 mx-auto flex justify-between items-center">
       <div className="flex items-center">
         <div className="cursor-pointer">
           <AiOutlineMenu onClick={handleMenu} size={30} />
@@ -54,86 +92,61 @@ const navigate = useNavigate();
           Best <span className="font-bold"> Eats</span>
         </h1>
         <div className="hidden lg:flex items-center bg-gray-200 rounded-full p-1 text-[14px]">
-          {delivery ? (
-            <button
-              style={{
-                backgroundColor: "black", // bg-black
-                color: "white", // text-white
-                display: "flex", // flex
-                alignItems: "center", // items-center
-                padding: "0.5rem", // py-2 (padding: 8px on top and bottom)
-                borderRadius: "9999px",
-              }}
-              onClick={handleDelivery}
-            >
-              <p>Delivery</p>
-            </button>
-          ) : (
-            <button
-              style={{
-                backgroundColor: "white", // bg-black
-                color: "black", // text-white
-                display: "flex", // flex
-                alignItems: "center", // items-center
-                padding: "0.5rem", // py-2 (padding: 8px on top and bottom)
-                borderRadius: "9999px",
-              }}
-              onClick={handleDelivery}
-            >
-              <p>Delivery</p>
-            </button>
-          )}
-
-          {pickup ? (
-            <button
-              style={{
-                backgroundColor: "black", // bg-black
-                color: "white", // text-white
-                display: "flex", // flex
-                alignItems: "center", // items-center
-                padding: "0.5rem", // py-2 (padding: 8px on top and bottom)
-                borderRadius: "9999px",
-              }}
-              onClick={handlePickup}
-            >
-              <p>Pickup.. </p>
-            </button>
-          ) : (
-            <button
-              style={{
-                backgroundColor: "white", // bg-black
-                color: "black", // text-white
-                display: "flex", // flex
-                alignItems: "center", // items-center
-                padding: "0.5rem", // py-2 (padding: 8px on top and bottom)
-                borderRadius: "9999px",
-              }}
-              onClick={handlePickup}
-            >
-              <p>Pickup</p>
-            </button>
-          )}
+          <button
+            className={`${
+              delivery ? "bg-black text-white" : "bg-white text-black"
+            } flex items-center py-2 px-4 rounded-full`}
+            onClick={handleDelivery}
+          >
+            Delivery
+          </button>
+          <button
+            className={`${
+              pickup ? "bg-black text-white" : "bg-white text-black"
+            } flex items-center py-2 px-4 rounded-full ml-2`}
+            onClick={handlePickup}
+          >
+            Pickup
+          </button>
         </div>
       </div>
-      {/* search  */}
 
-      <div className="bg-gray-200  rounded-full flex items-center px-2 w-[200px] sm:w-[400px] lg:w-[500px]">
+      {/* Search */}
+      <div className="bg-gray-200 rounded-full flex items-center px-2 w-[200px] sm:w-[400px] lg:w-[500px]">
         <AiOutlineSearch size={20} />
         <input
-          className="bg-transparent p-2 w-full focus:outline-none  "
+          className="bg-transparent p-2 w-full focus:outline-none"
           type="text"
           placeholder="Search foods"
         />
       </div>
 
-      <div>
-        {/* cart */}
-        <button className="bg-black text-white   flex items-center py-2 rounded-full">
-          <BsFillCartFill size={22} className="mr-3" /> Cart
+      {/* Cart */}
+      <div className="relative">
+        <button
+          className="bg-black text-white flex items-center py-2 px-4 rounded-full relative"
+          onClick={() => navigate("/cartlist")}
+        >
+          <BsFillCartFill size={22} className="mr-2" />
+          <span>Cart</span>
+          {/* Item count badge */}
+          <span
+            className="absolute top-[-10px] right-[-10px] bg-red-600 text-white rounded-full text-xs px-[7px] py-[2px] font-bold"
+            style={{
+              fontSize: "12px", // Modern small font size
+              display: "flex", // Flex to center the count
+              alignItems: "center",
+              justifyContent: "center",
+              height: "20px",
+              width: "20px",
+            }}
+          >
+            {cartCount} {/* Replace with your dynamic cart count */}
+          </span>
         </button>
       </div>
-      {/* mobile menu */}
-      {/* Overlay */}
+
+      {/* Mobile Menu */}
       {nav ? (
         <div
           style={{
@@ -146,11 +159,9 @@ const navigate = useNavigate();
             zIndex: 0,
           }}
         ></div>
-      ) : (
-        ""
-      )}
+      ) : null}
 
-      {/*sider drawer menu */}
+      {/* Sidebar Drawer */}
       <div
         style={
           nav
@@ -181,12 +192,11 @@ const navigate = useNavigate();
           onClick={handleCloseMenu}
           style={{
             position: "absolute",
-            right: "16px", // Assuming 1rem = 16px in your design
-            top: "16px", // Assuming 1rem = 16px in your design
+            right: "16px",
+            top: "16px",
             cursor: "pointer",
           }}
         />
-
         <h2 className="text-2xl p-4">
           Best <span className="font-bold">Eats</span>
         </h2>
@@ -194,40 +204,15 @@ const navigate = useNavigate();
           <ul className="flex flex-col p-4 text-gray-800">
             <li className="text-xl py-4 flex">
               <button
-                onClick={() => handleNavigate("/orders")}
+                onClick={() => handleNavigate("/Orders")}
                 className="flex items-center"
               >
                 <TbTruckDelivery size={25} className="mr-4" />
                 Orders
               </button>
             </li>
-            <li className="text-xl py-4 flex">
-              <button
-                onClick={() => handleNavigate("/favourites")}
-                className="flex items-center"
-              >
-                <MdFavorite size={25} className="mr-4" />
-                Favourites
-              </button>
-            </li>
-            <li className="text-xl py-4 flex">
-              <button
-                onClick={() => handleNavigate("/wallet")}
-                className="flex items-center"
-              >
-                <FaWallet size={25} className="mr-4" />
-                Wallet
-              </button>
-            </li>
-            <li className="text-xl py-4 flex">
-              <button
-                onClick={() => handleNavigate("/help")}
-                className="flex items-center"
-              >
-                <MdHelp size={25} className="mr-4" />
-                Help
-              </button>
-            </li>
+     
+      
             <li className="text-xl py-4 flex">
               <button
                 onClick={() => handleNavigate("/promotions")}
@@ -239,22 +224,35 @@ const navigate = useNavigate();
             </li>
             <li className="text-xl py-4 flex">
               <button
-                onClick={() => handleNavigate("/best-ones")}
+                onClick={() => handleNavigate("/profile")}
                 className="flex items-center"
               >
-                <BsFillSafeFill size={25} className="mr-4" />
-                Best Ones
+                <MdVerifiedUser size={25} className="mr-4" />
+                UserProfie
               </button>
             </li>
+
             <li className="text-xl py-4 flex">
               <button
-                onClick={() => handleNavigate("/admin/dashboard")}
+                onClick={() => handleNavigate("/favourites")}
                 className="flex items-center"
               >
-                <FaUserFriends size={25} className="mr-4" />
-                Login As Admin
+                <MdLogout size={25} className="mr-4" />
+                Logout
               </button>
             </li>
+        
+            {adminLogin && (
+              <li className="text-xl py-4 flex">
+                <button
+                  onClick={() => handleNavigate("/admin/dashboard")}
+                  className="flex items-center"
+                >
+                  <FaUserFriends size={25} className="mr-4" />
+                  Login As Admin
+                </button>
+              </li>
+            )}
           </ul>
         </nav>
       </div>

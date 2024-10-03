@@ -56,6 +56,8 @@ function LoginPage() {
     if (check_user.length > 0) {
       console.log("user login");
       dispatch(UpdateUserName(username));
+      localStorage.setItem("username", username);
+      localStorage.setItem("userDetails", JSON.stringify(check_user));
       navigate("/homepage");
     } else {
       console.log("user invalid");
