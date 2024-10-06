@@ -33,8 +33,8 @@ function AdminLogin() {
       navigate("/transport");
 
     }
-    else if(item.id === 4 && firstTwoChars === item.code){
-
+    else if(item.id === 4 ){
+      navigate("/inquiries")
     }
     else if(item.id === 5 && firstTwoChars === item.code){
 

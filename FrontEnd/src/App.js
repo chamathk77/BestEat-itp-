@@ -15,7 +15,7 @@ import Update from "./Screens/Admin/FoodManagement/UpdateFood";
 import CartList from "./Screens/CartList/CartList";
 import Orders from "./Screens/Orders/Orders";
 import UserProfile from "./Screens/UserProfile/UserProfile";
-import TransportDetails from "../src/Screens/Admin/Transport/Details"
+import TransportDetails from "../src/Screens/Admin/Transport/Details";
 
 import Drivers from "../src/Screens/Admin/Transport/drivers";
 import Vehicles from "../src/Screens/Admin/Transport/vehicles";
@@ -23,6 +23,9 @@ import Vehicles from "../src/Screens/Admin/Transport/vehicles";
 import "../src/Screens/Admin/Transport/styles.css";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+
+import Inquiries from "../src/Screens/Admin/Customer Care/inquiries";
+import InquiryChat from "../src/Screens/Admin/Customer Care/inquiryChat";
 const App = () => {
   return (
     <Provider store={store}>
@@ -61,15 +64,20 @@ const App = () => {
           <Route path="/admin/updatefood/:id" element={<Update />} />
 
           {/* **************************************************************************************************/}
-           {/* **************************************************************************************************/}
+          {/* **************************************************************************************************/}
 
           {/* kasun's  */}
           <Route path="/transport" element={<TransportDetails />} />
           <Route path="/drivers" element={<Drivers />} />
           <Route path="/vehicles" element={<Vehicles />} />
 
-
           {/* end of the kasun's */}
+
+          {/* dasith's  */}
+          <Route path="/inquiries" element={<Inquiries />} />
+          <Route path="/inquiryChat/:inq_ID" element={<InquiryChat />} />
+
+          {/* end of the Dashitha's */}
         </Routes>
       </Router>
     </Provider>

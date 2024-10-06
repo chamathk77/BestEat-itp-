@@ -646,3 +646,41 @@ app.post("/api/bike/deleteBike", (req, res) => {
 });
 
 // /api/bike/getAvailableBikes
+app.post("/api/inquiry/createMessage", (req, res) => {
+  try {
+    const body = req.body;
+    const prefix = "MID";
+    const suffix = Math.floor(100000 + Math.random() * 900000);
+    const Message_ID = prefix + "_" + suffix;
+
+    const insertQuery = `INSERT INTO inq_message (Msg_ID, Inq_ID, Name, Message) VALUES('${Message_ID}', '${body.Inq_ID}', '${body.Name}', '${body.Message}' )`;
+    db.query(insertQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in inserting..!",
+          error: error,
+        });
+      } else if (result) {
+        const refreshQuery = `SELECT * FROM inq_message WHERE Inq_ID ='${body.Inq_ID}'`;
+        db.query(refreshQuery, async (error, result) => {
+          if (error) {
+            res.status(400).json({
+              message: "Somthing went wrong in refreshing..!",
+              error: error,
+            });
+          } else if (result) {
+            res.status(201).json({
+              message: "Message Created ..!",
+              payload: result,
+            });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
