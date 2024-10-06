@@ -30,7 +30,7 @@ function AdminLogin() {
 
     }
     else if(item.id === 3 && firstTwoChars === item.code){
-      console.log("33333333333333333333333333333333333");
+      navigate("/transport");
 
     }
     else if(item.id === 4 && firstTwoChars === item.code){

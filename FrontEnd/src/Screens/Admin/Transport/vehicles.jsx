@@ -18,7 +18,7 @@ import {
 } from "mdb-react-ui-kit";
 import { TextField, MenuItem } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import DescriptionIcon from '@mui/icons-material/Description';
+import DescriptionIcon from "@mui/icons-material/Description";
 import Swal from "sweetalert2";
 import { toast } from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
@@ -27,15 +27,21 @@ import {
   fetchAllBikes,
   deleteBikes,
   updateBike,
-} from "../../Actions/bike-action";
+} from "../../../Redux/Actions/bike-action";
 import Tooltip from "@mui/material/Tooltip";
 import SettingsIcon from "@mui/icons-material/Settings";
 import DeleteIcon from "@mui/icons-material/Delete";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+
 
 const Vehicles = () => {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.bike.loading);
   const bikes = useSelector((state) => state.bike.bikes);
+
+  // Search state
+  const [serQuary, setSerQuary] = useState("");
 
   //custom hooks
   const [bikeID, setBikeID] = useState("");
@@ -63,7 +69,6 @@ const Vehicles = () => {
   useEffect(() => {
     dispatch(fetchAllBikes());
   }, [dispatch]);
-
 
   const removeBike = (data) => {
     const form = {
@@ -94,6 +99,11 @@ const Vehicles = () => {
 
   const closeModal = () => {
     setShmodal(false);
+    setBrand("")
+    setKilometers("")
+    setLastServiceDate("")
+    setLicensePlate("")
+    setModel("")
   };
 
   const handleSubmit = (e) => {
@@ -387,6 +397,74 @@ const Vehicles = () => {
     );
   };
 
+  /*search function */
+
+  const search = (event) => {
+    setSerQuary(event.target.value.toLowerCase());
+  };
+
+  // Search functionality to filter vehicles
+  const filteredBikes = bikes.filter(
+    (bike) =>
+      bike.LicensePlate.toLowerCase().includes(serQuary.toLowerCase()) ||
+      bike.Brand.toLowerCase().includes(serQuary.toLowerCase()) ||
+      bike.Model.toLowerCase().includes(serQuary.toLowerCase()) ||
+      bike.Status.toLowerCase().includes(serQuary.toLowerCase())
+  );
+
+  // Function to download the filtered vehicle table as a PDF with a watermark
+  const downloadPdf = () => {
+    var today = new Date();
+    var curr_date = today.getDate();
+    var curr_month = today.getMonth() + 1;
+    var curr_year = today.getFullYear();
+
+    var formattedDate = curr_month + "/" + curr_date + "/" + curr_year;
+    const doc = new jsPDF();
+
+    // Add date on the left corner
+    doc.setFontSize(9);
+    doc.text(formattedDate, 15, 5);
+
+    // Add "BestEats" name on the right corner
+    doc.setFontSize(9);
+    doc.text("BestEats", 175, 5, { align: "right" });
+
+    // Add title
+    doc.setFontSize(16);
+    doc.text("Vehicles List", doc.internal.pageSize.getWidth() / 2, 20, {
+      align: "center",
+    });
+
+    // Add table data
+    doc.autoTable({
+      startY: 30,
+      head: [
+        [
+          "Bike ID",
+          "License Plate",
+          "Brand",
+          "Model",
+          "Status",
+          "Last Service Date",
+          "Kilometers",
+        ],
+      ],
+      body: filteredBikes.map((bike) => [
+        bike.BikeID,
+        bike.LicensePlate,
+        bike.Brand,
+        bike.Model,
+        bike.Status,
+        bike.LastServiceDate,
+        bike.Kilometers,
+      ]),
+    });
+
+    // Save the PDF
+    doc.save("Vehicles_Report.pdf");
+  };
+
   return (
     <>
       <div className="main-container">
@@ -397,14 +475,14 @@ const Vehicles = () => {
         <div className="top-container">
           <div className="search">
             <MDBInputGroup>
-              <MDBInput label="Search" />
+              <MDBInput label="Search"value={serQuary} onChange={search} />
               <MDBBtn rippleColor="dark">
                 <MDBIcon icon="search" />
               </MDBBtn>
             </MDBInputGroup>
           </div>
           <div className="button-container">
-            <div className="pdf-btn">
+            <div className="pdf-btn" onClick={downloadPdf}>
               <DescriptionIcon />
               Download Report
             </div>
@@ -418,6 +496,9 @@ const Vehicles = () => {
               Add New Vehicle
             </div>
           </div>
+        </div>
+        <div className="mb-3">
+          <h6>Total Vehicles: {bikes.length}</h6>
         </div>
         <div className="table-container">
           <MDBTable hover>
@@ -438,7 +519,7 @@ const Vehicles = () => {
               </tr>
             </MDBTableHead>
             <MDBTableBody>
-              {bikes.map((data, index) => (
+              {filteredBikes.map((data, index) => (
                 <tr
                   key={index}
                   style={{ height: "50px", verticalAlign: "middle" }}

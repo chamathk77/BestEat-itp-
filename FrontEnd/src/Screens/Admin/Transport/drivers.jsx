@@ -27,17 +27,26 @@ import {
   CreateDrivers,
   DeleteDriver,
   updateDriver,
-} from "../../Actions/driver-action";
-import { fetchAvailableBikes } from "../../Actions/bike-action";
+  assignOrderToDriver
+} from "../../../Redux/Actions/driver-action";
+import { fetchAvailableBikes } from "../../../Redux/Actions/bike-action";
 import Tooltip from "@mui/material/Tooltip";
 import SettingsIcon from "@mui/icons-material/Settings";
 import DeleteIcon from "@mui/icons-material/Delete";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import DeliveryDiningIcon from "@mui/icons-material/DeliveryDining";
+import axios from "axios";
 
 const Drivers = () => {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.driver.loading);
   const drivers = useSelector((state) => state.driver.drivers);
   const bikes = useSelector((state) => state.bike.bikes);
+
+  const [orders, setOrders] = useState([]);
+  // Search state
+  const [serQuary, setSerQuary] = useState("");
 
   //custom hooks
   const [driverId, setDriverId] = useState("");
@@ -49,6 +58,8 @@ const Drivers = () => {
   const [dob, setDob] = useState("");
   const [status, setStatus] = useState("");
   const [bikeId, setBikeId] = useState("");
+  const [orderID, setOrderID] = useState("");
+
 
   useEffect(() => {
     document.title = "Drivers | Best Eats";
@@ -72,6 +83,21 @@ const Drivers = () => {
     dispatch(fetchAvailableBikes());
   }, [dispatch]);
 
+  //orders fetching
+  useEffect(() => {
+    function getOrders() {
+      axios
+        .get("http://localhost:5005/api/driver/getActiveOrders")
+        .then((res) => {
+          setOrders(res.data.payload);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    }
+    getOrders();
+  }, []);
+  
   const deleteDriver = (data) => {
     const form = {
       driverId: data.Driver_ID,
@@ -454,6 +480,168 @@ const Drivers = () => {
       </div>
     );
   };
+  //add new driver modal functions
+  const [shordermodal, setShordermodal] = useState(false);
+
+  const showOrderModal = (data) => {
+    setShordermodal(true);
+    setDriverId(data.Driver_ID);
+  };
+
+  const closeOrderModal = () => {
+    setShordermodal(false);
+    setOrderID("")
+  };
+
+  const handleOrder = (e) => {
+    e.preventDefault();
+
+    const form = {
+      driverId: driverId,
+      orderID: orderID
+    };
+
+    dispatch(assignOrderToDriver(form));
+    closeUpModal();
+  };
+
+  const AssignOrderModel = () => {
+    return (
+      <div>
+        <MDBModal open={shordermodal} setOpen={setShordermodal} tabIndex="-1">
+          <MDBModalDialog>
+            <MDBModalContent>
+              <MDBModalHeader>
+                <MDBModalTitle>Assign Order</MDBModalTitle>
+                <MDBBtn
+                  className="btn-close"
+                  color="none"
+                  onClick={closeOrderModal}
+                ></MDBBtn>
+              </MDBModalHeader>
+              <MDBModalBody>
+                <div className="list-wrapper">
+                  <form encType="multipart/form-data">
+                    <div
+                      className="col-md-12 form-group"
+                      style={{ marginBottom: "20px" }}
+                    >
+                      <TextField
+                        type="text"
+                        label="Driver ID"
+                        variant="outlined"
+                        fullWidth
+                        disabled
+                        value={driverId}
+                      />
+                    </div>
+                    <div className="col-md-12 form-group">
+                      <TextField
+                        select
+                        label="Status"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={orderID}
+                        onChange={(e) => setOrderID(e.target.value)}
+                      >
+                        {orders.map((order, index) => (
+                          <MenuItem key={index} value={order.OrderID}>
+                            {order.OrderID}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </div>
+                  </form>
+                </div>
+              </MDBModalBody>
+
+              <MDBModalFooter>
+                <MDBBtn color="secondary" onClick={closeOrderModal}>
+                  Close
+                </MDBBtn>
+                <MDBBtn onClick={handleOrder}>Assign Order</MDBBtn>
+              </MDBModalFooter>
+            </MDBModalContent>
+          </MDBModalDialog>
+        </MDBModal>
+      </div>
+    );
+  };
+
+  /*search function */
+
+  const search = (event) => {
+    setSerQuary(event.target.value.toLowerCase());
+  };
+
+  // Filter drivers based on the search query
+  const filteredDrivers = drivers.filter(
+    (driver) =>
+      driver.Name.toLowerCase().includes(serQuary) ||
+      driver.Email.toLowerCase().includes(serQuary) ||
+      driver.MobileNo.toLowerCase().includes(serQuary) ||
+      driver.NIC.toLowerCase().includes(serQuary) ||
+      driver.LicenseNumber.toLowerCase().includes(serQuary) ||
+      driver.Status.toLowerCase().includes(serQuary) ||
+      driver.BikeID.toLowerCase().includes(serQuary)
+  );
+
+  // Function to download the table as a PDF with a watermark
+  const downloadPdf = () => {
+    var today = new Date();
+    var curr_date = today.getDate();
+    var curr_month = today.getMonth() + 1;
+    var curr_year = today.getFullYear();
+
+    var formattedDate = curr_month + "/" + curr_date + "/" + curr_year;
+    const doc = new jsPDF({
+      orientation: "landscape",
+      unit: "mm",
+      format: [297, 210],
+    });
+
+    doc.setFontSize(9);
+    doc.text(formattedDate, 15, 5);
+
+    doc.setFontSize(9);
+    doc.text("BestEats", 275, 5, { align: "right" });
+
+    doc.setFontSize(16);
+    doc.text("Drivers List", doc.internal.pageSize.getWidth() / 2, 20, {
+      align: "center",
+    });
+
+    // Add table data
+    doc.autoTable({
+      startY: 30,
+      head: [
+        [
+          "Driver ID",
+          "Name",
+          "Email",
+          "Mobile No",
+          "NIC",
+          "License",
+          "Status",
+          "Bike ID",
+        ],
+      ],
+      body: filteredDrivers.map((driver) => [
+        driver.Driver_ID,
+        driver.Name,
+        driver.Email,
+        driver.MobileNo,
+        driver.NIC,
+        driver.LicenseNumber,
+        driver.Status,
+        driver.BikeID,
+      ]),
+    });
+
+    // Save the PDF
+    doc.save("Drivers_Report.pdf");
+  };
 
   return (
     <>
@@ -465,14 +653,14 @@ const Drivers = () => {
         <div className="top-container">
           <div className="search">
             <MDBInputGroup>
-              <MDBInput label="Search" />
+              <MDBInput label="Search" value={serQuary} onChange={search} />
               <MDBBtn rippleColor="dark">
                 <MDBIcon icon="search" />
               </MDBBtn>
             </MDBInputGroup>
           </div>
           <div className="button-container">
-            <div className="pdf-btn">
+            <div className="pdf-btn" onClick={downloadPdf}>
               <DescriptionIcon />
               Download Report
             </div>
@@ -486,6 +674,9 @@ const Drivers = () => {
               Add New Driver
             </div>
           </div>
+        </div>
+        <div className="mb-3">
+          <h6>Total Drivers: {drivers.length}</h6>
         </div>
         <div className="table-container">
           <MDBTable hover>
@@ -502,11 +693,12 @@ const Drivers = () => {
                 <th scope="col">License</th>
                 <th scope="col">Status</th>
                 <th scope="col">Bike ID</th>
+                <th scope="col">Order ID</th>
                 <th scope="col">Actions</th>
               </tr>
             </MDBTableHead>
             <MDBTableBody>
-              {drivers.map((data, index) => (
+              {filteredDrivers.map((data, index) => (
                 <tr
                   key={index}
                   style={{ height: "50px", verticalAlign: "middle" }}
@@ -520,6 +712,7 @@ const Drivers = () => {
                   <td>{data.LicenseNumber}</td>
                   <td>{data.Status}</td>
                   <td>{data.BikeID}</td>
+                  <td>{data.OrderID}</td>
                   <td className="action-buttons">
                     <Tooltip title="Upgrade Driver">
                       <SettingsIcon
@@ -536,9 +729,20 @@ const Drivers = () => {
                       <DeleteIcon
                         style={{
                           cursor: "pointer",
+                          marginRight: "15px",
                         }}
                         onClick={(e) => {
                           deleteDriver(data);
+                        }}
+                      />
+                    </Tooltip>
+                    <Tooltip title="Assign Order">
+                      <DeliveryDiningIcon
+                        style={{
+                          cursor: "pointer",
+                        }}
+                        onClick={(e) => {
+                          showOrderModal(data);
                         }}
                       />
                     </Tooltip>
@@ -551,6 +755,7 @@ const Drivers = () => {
       </div>
       {AddDriverModel()}
       {UpdateDriverModel()}
+      {AssignOrderModel()}
     </>
   );
 };

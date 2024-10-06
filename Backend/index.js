@@ -18,7 +18,7 @@ app.use(cors());
 // Function to handle MySQL connection and reconnection
 let db;
 
-function handleDisconnect() {
+export default function handleDisconnect() {
   db = mysql.createConnection(dbConfig);
 
   db.connect(function (err) {
@@ -125,9 +125,6 @@ app.put("/admin/updatefood/:id", (req, res) => {
 });
 // customer table--------------------
 
-
-
-
 app.get("/Users/Login", (req, res) => {
   const sqlSelect = "SELECT * FROM customers";
 
@@ -162,10 +159,8 @@ app.post("/order/display", (req, res) => {
   });
 });
 
-
-
 app.post("/order/insert", (req, res) => {
-  const { username, TotalAmount, OrderDetails,address } = req.body; // Destructure the request body
+  const { username, TotalAmount, OrderDetails, address } = req.body; // Destructure the request body
 
   // Prepare the SQL query for inserting an order
   const q =
@@ -177,8 +172,8 @@ app.post("/order/insert", (req, res) => {
     TotalAmount,
     JSON.stringify(OrderDetails), // Convert the order details to a JSON string
     false,
-    address
-     // Default value for is_delivered
+    address,
+    // Default value for is_delivered
   ];
 
   // Execute the query
@@ -272,3 +267,382 @@ app.put("/items/:id", (req, res) => {
 });
 
 //-----------------------------------------------------------------------------------------------------------
+app.get("/api/driver/getAll", (req, res) => {
+  try {
+    const fetchQuery = "SELECT * FROM driver ORDER BY CreateAt DESC";
+    db.query(fetchQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in data fetching..!",
+          error: error,
+        });
+      } else {
+        if (result.length > 0) {
+          res.status(200).json({
+            message: "Drivers fetched successfully ..!",
+            payload: result,
+          });
+        } else {
+          res.status(404).json({
+            message: "No data found..!",
+          });
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+app.post("/api/driver/createDriver", (req, res) => {
+  try {
+    const body = req.body;
+    const prefix = "DID";
+    const suffix = Math.floor(100000 + Math.random() * 900000);
+    const Driver_ID = prefix + "_" + suffix;
+
+    const insertQuery = `INSERT INTO driver (Driver_ID, Name, Email, MobileNo, NIC, LicenseNumber, Status, BikeID) VALUES('${Driver_ID}', '${body.name}', '${body.email}', '${body.mobile}', '${body.nic}' , '${body.license}', 'Inactive', '${body.bikeID}' )`;
+    db.query(insertQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in inserting..!",
+          error: error,
+        });
+      } else if (result) {
+        const refreshQuery = "SELECT * FROM driver ORDER BY CreateAt DESC";
+        db.query(refreshQuery, async (error, result) => {
+          if (error) {
+            res.status(400).json({
+              message: "Somthing went wrong in refreshing..!",
+              error: error,
+            });
+          } else if (result) {
+            res.status(201).json({
+              message: "Driver Created ..!",
+              payload: result,
+            });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+app.post("/api/driver/deleteDriver", (req, res) => {
+  try {
+    const data = req.body;
+    const deleteQuery = `DELETE FROM driver WHERE Driver_ID = '${data.driverId}'`;
+    db.query(deleteQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in deleting..!",
+          error: error,
+        });
+      } else if (result) {
+        const refreshQuery = "SELECT * FROM driver ORDER BY CreateAt DESC";
+        db.query(refreshQuery, async (error, result) => {
+          if (error) {
+            res.status(400).json({
+              message: "Somthing went wrong in refreshing..!",
+              error: error,
+            });
+          } else if (result.length > 0) {
+            res.status(200).json({
+              message: `Driver deleted successfully ..!`,
+              payload: result,
+            });
+          } else {
+            res.status(401).json({
+              message: `No data found..!`,
+            });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+app.post("/api/driver/updateDriver", (req, res) => {
+  try {
+    const body = req.body;
+    const updateQuery = `UPDATE driver SET Name='${body.name}' , Email='${body.email}' , MobileNo='${body.mobile}' , NIC='${body.nic}' , LicenseNumber='${body.license}' , Status='${body.status}', BikeID='${body.BikeID}' WHERE Driver_ID= '${body.driverId}'`;
+    db.query(updateQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in updating..!",
+          error: error,
+        });
+      } else if (result) {
+        const refreshQuery = "SELECT * FROM driver ORDER BY CreateAt DESC";
+        db.query(refreshQuery, async (error, result) => {
+          if (error) {
+            res.status(400).json({
+              message: "Somthing went wrong in refreshing..!",
+              error: error,
+            });
+          } else if (result.length > 0) {
+            res.status(200).json({
+              message: `Driver update successfully ..!`,
+              payload: result,
+            });
+          } else {
+            res.status(401).json({
+              message: `No data found..!`,
+            });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+app.post("/api/driver/addorder", (req, res) => {
+  try {
+    const body = req.body;
+    const updateQuery = `UPDATE driver SET OrderID='${body.orderID}' WHERE Driver_ID= '${body.driverId}'`;
+    db.query(updateQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in updating..!",
+          error: error,
+        });
+      } else if (result) {
+        const refreshQuery = "SELECT * FROM driver ORDER BY CreateAt DESC";
+        db.query(refreshQuery, async (error, result) => {
+          if (error) {
+            res.status(400).json({
+              message: "Somthing went wrong in refreshing..!",
+              error: error,
+            });
+          } else if (result.length > 0) {
+            res.status(200).json({
+              message: `Driver update successfully ..!`,
+              payload: result,
+            });
+          } else {
+            res.status(401).json({
+              message: `No data found..!`,
+            });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+// /api/driver/addorder
+
+// /api/bike/getAvailableBikes
+
+app.get("/api/bike/getAvailableBikes", (req, res) => {
+  try {
+    const fetchQuery = "SELECT * FROM bike WHERE Status='Not Allocated'";
+    db.query(fetchQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in data fetching..!",
+          error: error,
+        });
+      } else {
+        if (result.length > 0) {
+          res.status(200).json({
+            message: "Bikes fetched successfully ..!",
+            payload: result,
+          });
+        } else {
+          res.status(404).json({
+            message: "No data found..!",
+          });
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+app.get("/api/bike/getAll", (req, res) => {
+  try {
+    const fetchQuery = "SELECT * FROM bike";
+    db.query(fetchQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in data fetching..!",
+          error: error,
+        });
+      } else {
+        if (result.length > 0) {
+          res.status(200).json({
+            message: "Bikes fetched successfully ..!",
+            payload: result,
+          });
+        } else {
+          res.status(404).json({
+            message: "No data found..!",
+          });
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+app.post("/api/bike/createBike", (req, res) => {
+  try {
+    const body = req.body;
+    const prefix = "BID";
+    const suffix = Math.floor(100000 + Math.random() * 900000);
+    const Bike_ID = prefix + "_" + suffix;
+
+    const checkQuery = `SELECT * FROM bike WHERE LicensePlate = '${body.LicensePlate}'`;
+    db.query(checkQuery, async (err, results) => {
+      if (err) {
+        res.status(400).json({
+          message: "Somthing went wrong..!",
+          error: err,
+        });
+      } else if (results.length > 0) {
+        res.status(403).json({
+          message: "Bike Alredy Registered..!",
+        });
+      } else {
+        const insertQuery = `INSERT INTO bike (BikeID, LicensePlate, Brand, Model, Status, LastServiceDate, Kilometers) VALUES('${Bike_ID}', '${body.LicensePlate}', '${body.Brand}', '${body.Model}', 'Not Allocated', '${body.LastServiceDate}', '${body.Kilometers}' )`;
+        db.query(insertQuery, async (error, result) => {
+          if (error) {
+            res.status(400).json({
+              message: "Somthing went wrong in inserting..!",
+              error: error,
+            });
+          } else if (result) {
+            const refreshQuery = "SELECT * FROM bike";
+            db.query(refreshQuery, async (error, result) => {
+              if (error) {
+                res.status(400).json({
+                  message: "Somthing went wrong in refreshing..!",
+                  error: error,
+                });
+              } else if (result) {
+                res.status(201).json({
+                  message: "Bike Added ..!",
+                  payload: result,
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+app.post("/api/bike/updateBike", (req, res) => {
+  try {
+    const body = req.body;
+    const updateQuery = `UPDATE bike SET Status='${body.Status}' , LastServiceDate='${body.LastServiceDate}', Kilometers='${body.Kilometers}' WHERE BikeID= '${body.BikeID}'`;
+    db.query(updateQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in updating..!",
+          error: error,
+        });
+      } else if (result) {
+        const refresh = "SELECT * FROM bike";
+        db.query(refresh, async (error, result) => {
+          if (error) {
+            res.status(400).json({
+              message: "Somthing went wrong in refreshing..!",
+              error: error,
+            });
+          } else if (result.length > 0) {
+            res.status(200).json({
+              message: `Bike update successfully ..!`,
+              payload: result,
+            });
+          } else {
+            res.status(401).json({
+              message: `No data found..!`,
+            });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+app.post("/api/bike/deleteBike", (req, res) => {
+  try {
+    const data = req.body;
+    const deleteQuery = `DELETE FROM bike WHERE BikeID = '${data.BikeID}'`;
+    db.query(deleteQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in deleting..!",
+          error: error,
+        });
+      } else if (result) {
+        const refresh = "SELECT * FROM bike";
+        db.query(refresh, async (error, result) => {
+          if (error) {
+            res.status(400).json({
+              message: "Somthing went wrong in refreshing..!",
+              error: error,
+            });
+          } else if (result.length > 0) {
+            res.status(200).json({
+              message: `Bike deleted successfully ..!`,
+              payload: result,
+            });
+          } else {
+            res.status(401).json({
+              message: `No data found..!`,
+            });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+// /api/bike/getAvailableBikes

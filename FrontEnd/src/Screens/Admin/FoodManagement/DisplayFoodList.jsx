@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Popup from "reactjs-popup";
-import "reactjs-popup/dist/index.css";
+// import Popup from "reactjs-popup";
+// import "reactjs-popup/dist/index.css";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import CustomAlert from "../../../Components/CommonAlert/CommonAlert";
