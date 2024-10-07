@@ -83,7 +83,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="ml-4 mr-4 mt-2 max-w-[1640px] border-gray-950 mx-auto flex justify-between items-center">
+    <div className="ml-4 mr-4 mt-2 max-w-[1640px] border-gray-950 mx-4 flex justify-between items-center">
       <div className="flex items-center">
         <div className="cursor-pointer">
           <AiOutlineMenu onClick={handleMenu} size={30} />

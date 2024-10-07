@@ -60,6 +60,8 @@ const Drivers = () => {
   const [bikeId, setBikeId] = useState("");
   const [orderID, setOrderID] = useState("");
 
+  const[assignOrder,setAssignOrder]=useState("");
+
 
   useEffect(() => {
     document.title = "Drivers | Best Eats";
@@ -87,9 +89,12 @@ const Drivers = () => {
   useEffect(() => {
     function getOrders() {
       axios
-        .get("http://localhost:5005/api/driver/getActiveOrders")
+        .get("http://localhost:8800/orderss")
+
         .then((res) => {
-          setOrders(res.data.payload);
+          console.log("0000000000000000000000000000000",res.data);
+          const full_orders=res.data
+          setOrders(full_orders.filter((order) => order.is_delivered === "N" ));
         })
         .catch((err) => {
           console.log(err.message);
@@ -505,69 +510,103 @@ const Drivers = () => {
     closeUpModal();
   };
 
-  const AssignOrderModel = () => {
-    return (
-      <div>
-        <MDBModal open={shordermodal} setOpen={setShordermodal} tabIndex="-1">
-          <MDBModalDialog>
-            <MDBModalContent>
-              <MDBModalHeader>
-                <MDBModalTitle>Assign Order</MDBModalTitle>
-                <MDBBtn
-                  className="btn-close"
-                  color="none"
-                  onClick={closeOrderModal}
-                ></MDBBtn>
-              </MDBModalHeader>
-              <MDBModalBody>
-                <div className="list-wrapper">
-                  <form encType="multipart/form-data">
-                    <div
-                      className="col-md-12 form-group"
-                      style={{ marginBottom: "20px" }}
-                    >
-                      <TextField
-                        type="text"
-                        label="Driver ID"
-                        variant="outlined"
-                        fullWidth
-                        disabled
-                        value={driverId}
-                      />
-                    </div>
-                    <div className="col-md-12 form-group">
-                      <TextField
-                        select
-                        label="Status"
-                        variant="outlined"
-                        fullWidth
-                        required
-                        value={orderID}
-                        onChange={(e) => setOrderID(e.target.value)}
-                      >
-                        {orders.map((order, index) => (
-                          <MenuItem key={index} value={order.OrderID}>
-                            {order.OrderID}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                    </div>
-                  </form>
-                </div>
-              </MDBModalBody>
+  // const AssignOrderModel = () => {
 
-              <MDBModalFooter>
-                <MDBBtn color="secondary" onClick={closeOrderModal}>
-                  Close
-                </MDBBtn>
-                <MDBBtn onClick={handleOrder}>Assign Order</MDBBtn>
-              </MDBModalFooter>
-            </MDBModalContent>
-          </MDBModalDialog>
-        </MDBModal>
-      </div>
-    );
-  };
+    
+  //   return (
+  //     <div>
+  //       <MDBModal open={shordermodal} setOpen={setShordermodal} tabIndex="-1">
+  //         <MDBModalDialog>
+  //           <MDBModalContent>
+  //             <MDBModalHeader>
+  //               <MDBModalTitle>Assign Order</MDBModalTitle>
+  //               <MDBBtn
+  //                 className="btn-close"
+  //                 color="none"
+  //                 onClick={closeOrderModal}
+  //               ></MDBBtn>
+  //             </MDBModalHeader>
+  //             <MDBModalBody>
+  //               <div className="list-wrapper">
+  //                 <form encType="multipart/form-data">
+  //                   <div
+  //                     className="col-md-12 form-group"
+  //                     style={{ marginBottom: "20px" }}
+  //                   >
+  //                     <TextField
+  //                       type="text"
+  //                       label="Driver ID"
+  //                       variant="outlined"
+  //                       fullWidth
+  //                       disabled
+  //                       value={driverId}
+  //                     />
+  //                   </div>
+
+  //                   <div
+  //                     className="col-md-12 form-group"
+  //                     style={{ marginBottom: "20px" }}
+  //                   >
+  //                     <TextField
+  //                       type="text"
+  //                       label="Driver ID"
+  //                       variant="outlined"
+  //                       fullWidth
+                        
+  //                       value={driverId}
+  //                     />
+  //                   </div>
+  //                   <div className="col-md-12 form-group">
+  //                     <TextField
+  //                       select
+  //                       label="Status"
+  //                       variant="outlined"
+  //                       fullWidth
+  //                       required
+  //                       value={orderID}
+  //                       onChange={(e) => setOrderID(e.target.value)}
+  //                     >
+  //                       {orders.map((order, index) => (
+  //                         <MenuItem key={index} value={order.OrderID} onClick={()=>setAssignOrder(order.OrderID)} >
+  //                           {order.OrderID}
+  //                         </MenuItem>
+  //                       ))}
+  //                     </TextField>
+  //                   </div>
+
+  //                   <div className="col-md-12  mt-3 form-group">
+  //                     <TextField
+  //                       select
+  //                       label="Status"
+  //                       variant="outlined"
+  //                       fullWidth
+  //                       required
+  //                       value={orderID}
+  //                       onChange={(e) => setOrderID(e.target.value)}
+  //                     >
+  //                       {orders.map((order, index) => (
+  //                         <MenuItem key={index} value={order.OrderID}>
+  //                           {order.OrderID}
+  //                         </MenuItem>
+  //                       ))}
+  //                     </TextField>
+  //                   </div>
+  //                 </form>
+  //               </div>
+  //             </MDBModalBody>
+
+  //             <MDBModalFooter>
+  //               <MDBBtn color="secondary" onClick={closeOrderModal}>
+  //                 Close
+  //               </MDBBtn>
+  //               <MDBBtn onClick={handleOrder}>Assign Order</MDBBtn>
+  //             </MDBModalFooter>
+  //           </MDBModalContent>
+  //         </MDBModalDialog>
+  //       </MDBModal>
+  //     </div>
+  //   );
+  // };
 
   /*search function */
 
@@ -693,7 +732,7 @@ const Drivers = () => {
                 <th scope="col">License</th>
                 <th scope="col">Status</th>
                 <th scope="col">Bike ID</th>
-                <th scope="col">Order ID</th>
+                <th scope="col"></th>
                 <th scope="col">Actions</th>
               </tr>
             </MDBTableHead>
@@ -755,7 +794,7 @@ const Drivers = () => {
       </div>
       {AddDriverModel()}
       {UpdateDriverModel()}
-      {AssignOrderModel()}
+      {/* {AssignOrderModel()} */}
     </>
   );
 };

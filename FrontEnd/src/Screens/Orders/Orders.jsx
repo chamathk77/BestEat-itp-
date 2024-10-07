@@ -48,7 +48,7 @@ function Orders() {
               <p className="text-gray-600">
                 Delivery Status:{" "}
                 <span className="font-bold">
-                  {order.is_delivered === 1 ? "Delivered successfully" : "Delivery pending"}
+                  {order.is_delivered === "N" ? "Order placed" : order.is_delivered === "Y" ? "Order Delivered" : "Order Still Delivering"}
                 </span>
               </p>
               <p className="text-gray-600">Delivery Address: {order.address}</p>

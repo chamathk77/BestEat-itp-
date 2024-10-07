@@ -19,6 +19,7 @@ import TransportDetails from "../src/Screens/Admin/Transport/Details";
 
 import Drivers from "../src/Screens/Admin/Transport/drivers";
 import Vehicles from "../src/Screens/Admin/Transport/vehicles";
+import AssignOrder from "../src/Screens/Admin/Transport/OrderAssign";
 
 import "../src/Screens/Admin/Transport/styles.css";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
@@ -26,6 +27,13 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import Inquiries from "../src/Screens/Admin/Customer Care/inquiries";
 import InquiryChat from "../src/Screens/Admin/Customer Care/inquiryChat";
+
+import Employee from "./Screens/Admin/EmployeeManagement/Employee"
+import CreateEmployee from "./Screens/Admin/EmployeeManagement/createEmployee"
+import UpdateEmployee from "./Screens/Admin/EmployeeManagement/updateEmployee"
+
+
+
 const App = () => {
   return (
     <Provider store={store}>
@@ -70,6 +78,7 @@ const App = () => {
           <Route path="/transport" element={<TransportDetails />} />
           <Route path="/drivers" element={<Drivers />} />
           <Route path="/vehicles" element={<Vehicles />} />
+          <Route path="/ordersTransport" element={<AssignOrder />} />
 
           {/* end of the kasun's */}
 
@@ -78,6 +87,13 @@ const App = () => {
           <Route path="/inquiryChat/:inq_ID" element={<InquiryChat />} />
 
           {/* end of the Dashitha's */}
+
+          {/* praneepa */}
+          <Route path="/employee/display" element={<Employee />} />
+          <Route path="/employee/create" element={<CreateEmployee />} />
+          <Route path="/employee/update/:id" element={<UpdateEmployee />} />
+          {/* end of the praneepa's */}
+
         </Routes>
       </Router>
     </Provider>

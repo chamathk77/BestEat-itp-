@@ -17,6 +17,12 @@ function TransportDetails() {
       image:
         "https://duyt4h9nfnj50.cloudfront.net/new_search_home_eats_icon/Pizza_BrowseHome@3x.png",
     },
+    {
+      id: 3,
+      name: "Order Assigned",
+      image:
+        "https://duyt4h9nfnj50.cloudfront.net/new_search_home_eats_icon/Pizza_BrowseHome@3x.png",
+    }
   ];
 
   const navigate = useNavigate();
@@ -33,6 +39,9 @@ function TransportDetails() {
     if (item.id === 2) {
         navigate("/drivers")
     }
+    if (item.id === 3) {
+      navigate("/ordersTransport")
+  }
   };
 
   return (

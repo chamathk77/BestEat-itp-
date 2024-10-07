@@ -10,7 +10,7 @@ const Category = () => {
       </h1>
       {/* Category */}
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 py-6 ">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 py-6 br-2 ">
         {categories.map((item, index) => (
           <button style={{ backgroundColor: "white",borderColor:"white" }}>
             <div

@@ -27,6 +27,7 @@ function AdminLogin() {
 
       
     }else if(item.id === 2 && firstTwoChars === item.code){
+      navigate("/employee/display")
 
     }
     else if(item.id === 3 && firstTwoChars === item.code){

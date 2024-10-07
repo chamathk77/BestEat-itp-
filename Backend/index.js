@@ -171,7 +171,7 @@ app.post("/order/insert", (req, res) => {
     username,
     TotalAmount,
     JSON.stringify(OrderDetails), // Convert the order details to a JSON string
-    false,
+    "N",
     address,
     // Default value for is_delivered
   ];
@@ -186,6 +186,8 @@ app.post("/order/insert", (req, res) => {
     return res.status(201).json("true"); // Return a success message
   });
 });
+
+
 
 //-----------------------------------------------------------------------------------------------------------
 
@@ -266,7 +268,9 @@ app.put("/items/:id", (req, res) => {
   });
 });
 
-//-----------------------------------------------------------------------------------------------------------
+//------------------------------------------kasun-----------------------------------------------------------------
+
+//drivers -------
 app.get("/api/driver/getAll", (req, res) => {
   try {
     const fetchQuery = "SELECT * FROM driver ORDER BY CreateAt DESC";
@@ -296,6 +300,8 @@ app.get("/api/driver/getAll", (req, res) => {
     });
   }
 });
+
+
 app.post("/api/driver/createDriver", (req, res) => {
   try {
     const body = req.body;
@@ -450,9 +456,7 @@ app.post("/api/driver/addorder", (req, res) => {
   }
 });
 
-// /api/driver/addorder
-
-// /api/bike/getAvailableBikes
+// Bikes -------
 
 app.get("/api/bike/getAvailableBikes", (req, res) => {
   try {
@@ -645,7 +649,7 @@ app.post("/api/bike/deleteBike", (req, res) => {
   }
 });
 
-// /api/bike/getAvailableBikes
+
 app.post("/api/inquiry/createMessage", (req, res) => {
   try {
     const body = req.body;
@@ -683,4 +687,140 @@ app.post("/api/inquiry/createMessage", (req, res) => {
       error: error,
     });
   }
+});
+
+
+// order table for transport ------------
+app.get("/ordersTransport", (req, res) => {
+  // const { username } = req.body; // Get username from the request body
+
+  // if (!username) {
+  //   return res.status(400).json({ error: "Username is required" });
+  // }
+
+  const sqlSelect = "SELECT * FROM orders";
+
+  db.query(sqlSelect, (err, data) => {
+    if (err) {
+      console.log("Error occurred:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    if (data.length === 0) {
+      return res.status(404).json({ message: "No orders found for the user" });
+    }
+    return res.status(200).json(data);
+  });
+});
+
+app.get("/api/driver/Assigndriver", (req, res) => {
+  try {
+    const fetchQuery = "SELECT * FROM driver";
+    db.query(fetchQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in data fetching..!",
+          error: error,
+        });
+      } else {
+        if (result.length > 0) {
+          res.status(200).json({
+            message: "Drivers fetched successfully ..!",
+            payload: result,
+          });
+        } else {
+          res.status(404).json({
+            message: "No data found..!",
+          });
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+app.put("/order/assign/:id", (req, res) => {
+  const orderId = req.params.id; // Order ID from the request parameters
+
+  // SQL query to update the order details (assign driver and update status)
+  const q = "UPDATE orders SET `driverId` = ?, `is_delivered` = ? WHERE OrderID = ?";
+
+  const VALUES = [
+    req.body.driverId,  // Driver ID from the request body
+    req.body.is_delivered // Delivery status (e.g., 'N', 'Y', 'P') from the request body
+  ];
+
+  // Execute the query with the provided values and orderId
+  db.query(q, [...VALUES, orderId], (err, data) => {
+    if (err) {
+      console.log("Error occurred:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    return res.status(200).json("Order has been updated successfully");
+  });
+});
+// ------------------------------praneepa---------------------------------------
+
+app.get("/employee/display", (req, res) => {
+  const sql = "SELECT * FROM employee";
+  db.query(sql, (err, data) => {
+      if (err) return res.json("ERROR");
+      return res.json(data);
+  });
+});
+
+app.post('employee/create', (req, res) => {  
+  const sql = "INSERT INTO employee (`id`, `Name`, `Address`, `Phoneno`, `Email`) VALUES (?)";
+
+  const values = [
+      req.body.id,
+      req.body.name,
+      req.body.address,
+      req.body.phone,
+      req.body.email,
+  ];
+  db.query(sql, [values], (err) => {
+      if (err) {
+          console.error("Error inserting data:", err); 
+          return res.json("Error");
+      }
+      return res.json("Employee added successfully");
+  });
+});
+
+app.put('/employee/update/:id', (req, res) => {
+  const sql = "UPDATE employee SET `Name` = ?, `Address` = ?, `Phoneno` = ?, `Email` = ? WHERE `id` = ?";
+  
+  const values = [
+      req.body.name,
+      req.body.address,
+      req.body.phone,
+      req.body.email,
+      req.params.id, 
+  ];
+  
+  db.query(sql, values, (err) => {
+      if (err) {
+          console.error("Error updating data:", err); 
+          return res.status(500).json("Error updating employee");
+      }
+      return res.json("Employee updated successfully");
+  });
+});
+
+app.delete('/delete/employee/:id', (req, res) => {
+  const sql = "DELETE FROM employee WHERE id = ?";
+  const id = req.params.id; 
+
+  db.query(sql, [id], (err) => {
+      if (err) {
+          console.error("Error deleting data:", err); 
+          return res.status(500).json("Error deleting employee");
+      }
+      return res.json("Employee deleted successfully");
+  });
 });
