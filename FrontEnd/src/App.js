@@ -28,11 +28,16 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import Inquiries from "../src/Screens/Admin/Customer Care/inquiries";
 import InquiryChat from "../src/Screens/Admin/Customer Care/inquiryChat";
 
-import Employee from "./Screens/Admin/EmployeeManagement/Employee"
-import CreateEmployee from "./Screens/Admin/EmployeeManagement/createEmployee"
-import UpdateEmployee from "./Screens/Admin/EmployeeManagement/updateEmployee"
+import Employee from "./Screens/Admin/EmployeeManagement/Employee";
+import CreateEmployee from "./Screens/Admin/EmployeeManagement/createEmployee";
+import UpdateEmployee from "./Screens/Admin/EmployeeManagement/updateEmployee";
+import Schedule from "./Screens/Admin/EmployeeManagement/scheduletime";
 
 
+import DashboardChart from "./Screens/Admin/InventoryManagement/DashboardChart";
+import DisplayItem from "./Screens/Admin/InventoryManagement/DisplayItem";
+import AddItem from "./Screens/Admin/InventoryManagement/AddItem";
+import UpdateItem from "./Screens/Admin/InventoryManagement/UpdateItem";
 
 const App = () => {
   return (
@@ -92,7 +97,15 @@ const App = () => {
           <Route path="/employee/display" element={<Employee />} />
           <Route path="/employee/create" element={<CreateEmployee />} />
           <Route path="/employee/update/:id" element={<UpdateEmployee />} />
+          <Route path="/employee/Schedule" element={<Schedule />} />
           {/* end of the praneepa's */}
+
+          {/* savindi */}
+          <Route path="/admin/dashboardchart" element={<DashboardChart />} />
+          <Route path="/admin/displayinventory" element={<DisplayItem />} />
+          <Route path="/admin/addinventory" element={<AddItem />} />
+          <Route path="/admin/update/:id" element={<UpdateItem />} />
+          {/* end of the savindi's */}
 
         </Routes>
       </Router>

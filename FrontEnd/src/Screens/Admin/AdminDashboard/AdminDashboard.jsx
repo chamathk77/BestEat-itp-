@@ -12,11 +12,9 @@ function AdminLogin() {
   const [alertTopic, setAlertTopic] = useState("");
   const [buttonCount, setButtonCount] = useState(1);
 
-  const username =  localStorage.getItem("username");
+  const username = localStorage.getItem("username");
 
   const handleButtonPress = (item) => {
-
-
     console.log("------------------------------------", item.id);
     console.log("------------------------------------", item.code);
 
@@ -24,34 +22,19 @@ function AdminLogin() {
 
     if (item.id === 1 && firstTwoChars === item.code) {
       navigate("/admin/displayfoodlist");
-
-      
-    }else if(item.id === 2 && firstTwoChars === item.code){
-      navigate("/employee/display")
-
-    }
-    else if(item.id === 3 && firstTwoChars === item.code){
+    } else if (item.id === 2 && firstTwoChars === item.code) {
+      navigate("/employee/display");
+    } else if (item.id === 3 && firstTwoChars === item.code) {
       navigate("/transport");
-
-    }
-    else if(item.id === 4 ){
-      navigate("/inquiries")
-    }
-    else if(item.id === 5 && firstTwoChars === item.code){
-
-    }
-    else if(item.id === 6 && firstTwoChars === item.code){
-
-    }
-    else if(item.id === 7 && firstTwoChars === item.code){
-
-    }
-    else if(item.id === 8 && firstTwoChars === item.code){
-
-    }
-    else if(item.id === 9 && firstTwoChars === item.code){
-
-    }else{
+    } else if (item.id === 4 && firstTwoChars === item.code) {
+      navigate("/inquiries");
+    } else if (item.id === 5 && firstTwoChars === item.code) {
+    } else if (item.id === 6 && firstTwoChars === item.code) {
+      navigate("/admin/dashboardchart");
+    } else if (item.id === 7 && firstTwoChars === item.code) {
+    } else if (item.id === 8 && firstTwoChars === item.code) {
+    } else if (item.id === 9 && firstTwoChars === item.code) {
+    } else {
       setAlertTopic("Error");
       setAlertDescription("This is Restricted\nAsk Admin for Permission");
       setShowAlert(true);

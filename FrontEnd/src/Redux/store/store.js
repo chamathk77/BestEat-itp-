@@ -6,6 +6,7 @@ import driverReducer from "../reducers/driver-reducer";
 import bikeReducer from '../reducers/bike-reducer'
 import inqReducer from '../reducers/inq-reducer'
 import msgReducer from "../reducers/inq-reducer";
+import Employee  from '../reducers/Employee';
 
 
 export const store = configureStore({
@@ -17,6 +18,7 @@ export const store = configureStore({
     Order: FoodOrderReducer,
     inq:inqReducer,
     msg:msgReducer,
+    Employee:Employee
    
   },
 });

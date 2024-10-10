@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import CustomAlert from "../../../Components/CommonAlert/CommonAlert";
 import { UpdateSelectedFood } from "../../../Redux/reducers/LoginReducer";
 import { useDispatch } from "react-redux";
+import jsPDF from "jspdf";
+import "jspdf-autotable"; // Import the autotable plugin for jsPDF
 
 function DisplayFoodList() {
   const dispatch = useDispatch();
@@ -73,6 +75,32 @@ function DisplayFoodList() {
   const handleNegativeAction = () => {
     setShowAlert(false);
   };
+
+  // Function to generate and download PDF
+const generatePDF = () => {
+  const doc = new jsPDF();
+  doc.setFontSize(20);
+  doc.text("Food Menu Report", 14, 22);
+
+  // Prepare data for the table
+  const tableData = filterdData.map(item => [
+    item.id,                // Include ID
+    item.name,              // Include name
+    item.price.toFixed(2),  // Include price formatted to 2 decimal places
+    item.category           // Include category
+  ]);
+
+  // Generate the table
+  doc.autoTable({
+    head: [['ID', 'Name', 'Price', 'Category']], // Column headers
+    body: tableData,
+    startY: 30,
+  });
+
+  // Save the PDF
+  doc.save("food_menu_report.pdf");
+};
+
 
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
@@ -175,6 +203,35 @@ function DisplayFoodList() {
           }}
         >
           Add New Food
+        </button>
+      </div>
+
+           {/* Generate PDF Button */}
+           <div style={{ display: "flex", justifyContent: "flex-end", margin: "20px 0" }}>
+        <button
+          onClick={generatePDF}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#28a745",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            fontSize: "16px",
+            fontWeight: "500",
+            transition: "background-color 0.3s ease, transform 0.3s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = "#218838";
+            e.target.style.transform = "translateY(-2px)";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = "#28a745";
+            e.target.style.transform = "translateY(0)";
+          }}
+        >
+          Download Report
         </button>
       </div>
 

@@ -1,6 +1,7 @@
 import express from "express";
 import mysql from "mysql";
 import cors from "cors";
+import { Parser } from 'json2csv';
 
 const app = express();
 const port = 8800;
@@ -193,7 +194,7 @@ app.post("/order/insert", (req, res) => {
 
 //-------------------------------------------Savindi-----------------------------------------------------------------
 
-app.get("/items", (req, res) => {
+app.get("/items", (_req, res) => {
   const q = "SELECT * FROM items";
   db.query(q, (err, data) => {
     if (err) return res.json(err);
@@ -202,71 +203,152 @@ app.get("/items", (req, res) => {
 });
 
 app.post("/items", (req, res) => {
-  const q =
-    "INSERT INTO items (`name`, `category`, `unit_price`, `quantity`) VALUES (?)";
+  const q = "INSERT INTO items (`name`, `category`, `unit_price`, `quantity`, `expire_date`) VALUES (?)";
   const values = [
     req.body.name,
     req.body.category,
     req.body.unit_price,
     req.body.quantity,
+    req.body.expire_date,
   ];
 
-  db.query(q, [values], (err, data) => {
+  db.query(q, [values], (err, _data) => {
     if (err) return res.json(err);
-    return res.json("Item has addede successfully");
+    return res.json("Item has been added successfully");
   });
 });
 
+// Exporting a report as CSV (JSON to CSV conversion is used)
+app.get("/admin/generatereport", (_req, res) => {
+  const sqlSelect = "SELECT * FROM items"; 
+
+  db.query(sqlSelect, (err, data) => {
+    if (err) {
+      console.log("Error occurred:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    const csv = new Parser().parse(data); // Convert JSON to CSV
+    res.header("Content-Type", "text/csv");
+    res.attachment("item_report.csv"); // CSV file download name
+    res.send(csv); // Send the CSV file
+  });
+});
+
+// Search endpoint for items based on name or code
+app.get('/search', (req, res) => {
+  const searchQuery = req.query.q;
+  const sqlSearch = `SELECT * FROM items WHERE item_name LIKE ? OR item_code LIKE ?`;
+
+  db.query(sqlSearch, [`%${searchQuery}%`, `%${searchQuery}%`], (err, result) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json(result);
+  });
+});
+
+// Delete item
 app.delete("/items/:id", (req, res) => {
   const itemId = req.params.id;
   const q = "DELETE FROM items WHERE id = ?";
 
-  db.query(q, [itemId], (err, data) => {
+  db.query(q, [itemId], (err, _data) => {
     if (err) return res.json(err);
     return res.json("Item has been deleted successfully");
   });
 });
 
+// Get item by ID
+app.get("/items/:id", (req, res) => {
+  const itemId = req.params.id;
+  const q = "SELECT * FROM items WHERE id = ?";
+
+  db.query(q, [itemId], (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data[0]); // Return the specific item
+  });
+});
+
+// Update item
 app.put("/items/:id", (req, res) => {
   const itemId = req.params.id;
-  const q =
-    "UPDATE items SET name = ?, category = ?, unit_price = ?, quantity = ?, rquantity = ?  WHERE id = ?";
+  const q = "UPDATE items SET name = ?, category = ?, unit_price = ?, quantity = ?, expire_date = ?  WHERE id = ?";
 
   const values = [
     req.body.name,
     req.body.category,
     req.body.unit_price,
     req.body.quantity,
-    req.body.rquantity,
+    req.body.expire_date,
   ];
 
-  db.query(q, [...values, itemId], (err, data) => {
+  db.query(q, [...values, itemId], (err, _data) => {
     if (err) return res.json(err);
     return res.json("Item has been updated successfully");
   });
 });
 
-app.put("/items/:id", (req, res) => {
+// Update order quantity
+app.put("/itemss/:id", (req, res) => {
   const itemId = req.params.id;
   const q = "UPDATE items SET rquantity = ? WHERE id = ?";
-
   const rquantity = req.body.rquantity;
 
-  console.log("Received rquantity: ", rquantity); // Log the received value
-  console.log("Item ID: ", itemId); // Log the item ID
+  console.log("Received rquantity: ", rquantity);
+  console.log("Item ID: ", itemId);
 
   if (!rquantity || isNaN(rquantity)) {
     return res.status(400).json("Invalid remaining quantity value");
   }
 
-  db.query(q, [rquantity, itemId], (err, data) => {
+  db.query(q, [rquantity, itemId], (err, _data) => {
     if (err) {
-      console.error("Error updating the database: ", err); // Log database error
+      console.error("Error updating the database: ", err);
       return res.json(err);
     }
     return res.json("Remaining quantity updated successfully!");
   });
 });
+
+// Expiring items tracking
+app.get('/api/expiring-items', (req, res) => {
+  const query = `SELECT * FROM items WHERE expire_date <= CURDATE() + INTERVAL 7 DAY AND expire_date > CURDATE()`;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching expiring items:', err); // Log error
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+    console.log('Expiring items results:', results); // Log results
+    res.json(results);
+  });
+});
+
+app.get('/api/expiring-items', (req, res) => {
+  const query = 'SELECT * FROM items WHERE expire_date < DATE_ADD(CURDATE(), INTERVAL 3 DAY)';
+  db.query(query, (err, results) => {
+    if (err) return res.status(500).send(err);
+    res.json(results);
+  });
+});
+
+// Endpoint to generate report of expiring items
+app.get('/api/generate-report', (req, res) => {
+  const query = 'SELECT * FROM items WHERE expire_date < DATE_ADD(CURDATE(), INTERVAL 3 DAY)';
+  db.query(query, (err, results) => {
+    if (err) return res.status(500).send(err);
+
+    // Generate CSV
+    const json2csvParser = new Parser();
+    const csv = json2csvParser.parse(results);
+
+    // Set headers for CSV download
+    res.header('Content-Type', 'text/csv');
+    res.attachment('expiring-items-report.csv');
+    res.send(csv);
+  });
+});
+
 
 //------------------------------------------kasun-----------------------------------------------------------------
 
@@ -850,5 +932,7 @@ app.put('/employee/updateshedule/:id', (req, res) => {
     return res.json({ message: "Schedule updated successfully" });
   });
 });
+
+
 
 

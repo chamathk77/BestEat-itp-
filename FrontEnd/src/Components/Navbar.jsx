@@ -244,7 +244,7 @@ const Navbar = () => {
 
             <li className="text-xl py-4 flex">
               <button
-                onClick={() => handleNavigate("/")}
+                onClick={() => handleNavigate("/login")}
                 className="flex items-center"
               >
                 <MdLogout size={25} className="mr-4" />

@@ -207,7 +207,7 @@ export const Admincategories = [
     name: "Cutomer Care Management",
     image:
       "https://duyt4h9nfnj50.cloudfront.net/new_search_home_eats_icon/Indian_BrowseHome@3x.png",
-    code: "ACC",
+    code: "AC",
   },
   {
     id: 5,

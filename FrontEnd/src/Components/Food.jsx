@@ -112,6 +112,8 @@ const Food = () => {
   const handlebuttonClick = (item) => {
     console.log("handle button click", item);
 
+
+
     const exist = cart.find((x) => x.id === item.id);
 
     if (exist) {
@@ -149,6 +151,8 @@ const Food = () => {
       <h1 className="text-orange-600 font-bold text-4xl text-center">
         Top Rated Menu Item
       </h1>
+
+      
 
   
 
