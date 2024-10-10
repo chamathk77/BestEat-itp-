@@ -31,7 +31,7 @@ import {
   deleteMsg,
   updateMsg,
 } from "../../../Redux/Actions/inq-msg-action";
-
+import "./customer.css";
 const InquiryChat = () => {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.inq.loading);
@@ -40,6 +40,7 @@ const InquiryChat = () => {
   const messages = useSelector((state) => state.msg.msg);
 
   const { inq_ID } = useParams();
+  const [msg, setMsg] = useState("");
 
   // this is tempory one name
   const tempName = "Dashitha";
@@ -50,7 +51,7 @@ const InquiryChat = () => {
 
   //custome hooks
   const [name, setName] = useState("");
-  const [msg, setMsg] = useState("");
+
   const [msgID, setMsgID] = useState("");
 
   useEffect(() => {

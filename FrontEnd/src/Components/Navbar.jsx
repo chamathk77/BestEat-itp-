@@ -12,6 +12,7 @@ import { FaUserFriends, FaWallet } from "react-icons/fa";
 import { MdLogout, MdVerifiedUser } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { MdFeedback } from 'react-icons/md';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -230,6 +231,16 @@ const Navbar = () => {
               </button>
             </li>
 
+            <li className="text-xl py-4 flex">
+              <button
+                onClick={() => handleNavigate("/feedbacks")}
+                className="flex items-center"
+              >
+                <MdFeedback size={25} className="mr-4" />
+                Feedbacks
+              </button>
+            </li>
+
             {adminLogin && (
               <li className="text-xl py-4 flex">
                 <button
@@ -244,7 +255,7 @@ const Navbar = () => {
 
             <li className="text-xl py-4 flex">
               <button
-                onClick={() => handleNavigate("/login")}
+                onClick={() => handleNavigate("/")}
                 className="flex items-center"
               >
                 <MdLogout size={25} className="mr-4" />

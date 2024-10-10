@@ -20,10 +20,16 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { fetchAllInq, deleteInq } from "../../../Redux/Actions/inq-actions";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import Chart from "react-apexcharts";
+
 const Inquiries = () => {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.inq.loading);
   const inquiries = useSelector((state) => state.inq.inquiries);
+
+  // States to hold chart data
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [statusData, setStatusData] = useState([]);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -70,62 +76,139 @@ const Inquiries = () => {
     setSearchQuery(event.target.value.toLowerCase());
   };
 
+  // Search Functionality to filter inquiries based on the query
+  const filteredInquiries = inquiries.filter(
+    (inquiry) =>
+      inquiry.Inq_ID.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      inquiry.Customer_Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      inquiry.Inquiry_Subject.toLowerCase().includes(
+        searchQuery.toLowerCase()
+      ) ||
+      inquiry.Status.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-    // Search Functionality to filter inquiries based on the query
-    const filteredInquiries = inquiries.filter(
-      (inquiry) =>
-        inquiry.Inq_ID.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        inquiry.Customer_Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        inquiry.Inquiry_Subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        inquiry.Status.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  
-    // Function to download the filtered inquiries as a PDF with a watermark
-    const downloadPdf = () => {
-      const doc = new jsPDF();
-      var today = new Date();
-      var curr_date = today.getDate();
-      var curr_month = today.getMonth() + 1;
-      var curr_year = today.getFullYear();
-      var formattedDate = curr_month + "/" + curr_date + "/" + curr_year;
-  
-      // Add header with date and name of the app
-      doc.setFontSize(9);
-      doc.text(formattedDate, 15, 5);
-      doc.setFontSize(9);
-      doc.text("Best Eats", 175, 5, { align: "right" });
-  
-      // Add title
-      doc.setFontSize(16);
-      doc.text("Inquiries List", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+  // Function to download the filtered inquiries as a PDF with a watermark
+  const downloadPdf = () => {
+    const doc = new jsPDF();
+    var today = new Date();
+    var curr_date = today.getDate();
+    var curr_month = today.getMonth() + 1;
+    var curr_year = today.getFullYear();
+    var formattedDate = curr_month + "/" + curr_date + "/" + curr_year;
 
-  
-      // Add table data
-      doc.autoTable({
-        startY: 30,
-        head: [["Inquiry ID", "Customer Name", "Inquiry Subject", "Status", "Date"]],
-        body: filteredInquiries.map((data) => [
-          data.Inq_ID,
-          data.Customer_Name,
-          data.Inquiry_Subject,
-          data.Status,
-          new Date(data.CreatedAt).toLocaleString("en-US", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: true,
-          }),
-        ]),
+    // Add header with date and name of the app
+    doc.setFontSize(9);
+    doc.text(formattedDate, 15, 5);
+    doc.setFontSize(9);
+    doc.text("Best Eats", 175, 5, { align: "right" });
+
+    // Add title
+    doc.setFontSize(16);
+    doc.text("Inquiries List", doc.internal.pageSize.getWidth() / 2, 20, {
+      align: "center",
+    });
+
+    // Add table data
+    doc.autoTable({
+      startY: 30,
+      head: [
+        ["Inquiry ID", "Customer Name", "Inquiry Subject", "Status", "Date"],
+      ],
+      body: filteredInquiries.map((data) => [
+        data.Inq_ID,
+        data.Customer_Name,
+        data.Inquiry_Subject,
+        data.Status,
+        new Date(data.CreatedAt).toLocaleString("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        }),
+      ]),
+    });
+
+    // Save the PDF
+    doc.save("Inquiries_Report.pdf");
+  };
+
+  //chart functions
+  useEffect(() => {
+    if (inquiries && inquiries.length > 0) {
+      // Generate monthly data
+      const months = Array(12).fill(0);
+      inquiries.forEach((inquiry) => {
+        const month = new Date(inquiry.CreatedAt).getMonth(); // Extract month index (0 - 11)
+        months[month] += 1; // Increment count for the respective month
       });
-  
-      // Save the PDF
-      doc.save("Inquiries_Report.pdf");
-    };
+      setMonthlyData(months);
 
+      // Generate status data for the pie chart
+      const statusCounts = inquiries.reduce(
+        (acc, inquiry) => {
+          if (inquiry.Status.toLowerCase() === "resolve") {
+            acc[0] += 1;
+          } else if (inquiry.Status.toLowerCase() === "pending") {
+            acc[1] += 1;
+          }
+          return acc;
+        },
+        [0, 0]
+      );
 
+      setStatusData(statusCounts);
+    }
+  }, [inquiries]);
+
+  // Monthly Chart Options
+  const monthlyOptions = {
+    chart: {
+      id: "monthly-bar-chart",
+    },
+    xaxis: {
+      categories: [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ],
+    },
+    yaxis: {
+      min: 0,
+      labels: {
+        formatter: function (value) {
+          return Math.floor(value);
+        },
+      },
+    },
+    title: {
+      text: "Inquiries Count per Month",
+      align: "center",
+    },
+  };
+
+  // Status Pie Chart Options
+  const statusOptions = {
+    chart: {
+      type: "pie",
+    },
+    labels: ["Resolved", "Pending"],
+    title: {
+      text: "Inquiry Status Distribution",
+      align: "center",
+    },
+  };
 
   return (
     <>
@@ -153,6 +236,29 @@ const Inquiries = () => {
               <DescriptionIcon />
               Download Report
             </div>
+          </div>
+        </div>
+        <div className="top-container">
+          <div style={{ width: "45%" }}>
+            <Chart
+              options={monthlyOptions}
+              series={[
+                {
+                  name: "Inquiries Count",
+                  data: monthlyData,
+                },
+              ]}
+              type="bar"
+              height="400"
+            />
+          </div>
+          <div style={{ width: "45%" }}>
+            <Chart
+              options={statusOptions}
+              series={statusData}
+              type="pie"
+              height="400"
+            />
           </div>
         </div>
 

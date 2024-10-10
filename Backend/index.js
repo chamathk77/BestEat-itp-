@@ -934,5 +934,156 @@ app.put('/employee/updateshedule/:id', (req, res) => {
 });
 
 
+//--------------------------------- dasitha -----------------------------------------------------
+
+
+app.post("/api/inqMsg/getAll", (req, res) => {
+  try {
+    const fetchQuery = `SELECT * FROM inq_message WHERE Inq_ID ='${req.body.Inq_ID}'`;
+    db.query(fetchQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in data fetching..!",
+          error: error,
+        });
+      } else {
+        if (result.length > 0) {
+          res.status(200).json({
+            message: "Messages fetched successfully ..!",
+            payload: result,
+          });
+        } else {
+          res.status(404).json({
+            message: "No data found..!",
+          });
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+app.post("/api/inqMsg/createMessage", (req, res) => {
+  try {
+    const body = req.body;
+    const prefix = "MID";
+    const suffix = Math.floor(100000 + Math.random() * 900000);
+    const Message_ID = prefix + "_" + suffix;
+
+    const insertQuery = `INSERT INTO inq_message (Msg_ID, Inq_ID, Name, Message) VALUES('${Message_ID}', '${body.Inq_ID}', '${body.Name}', '${body.Message}' )`;
+    db.query(insertQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in inserting..!",
+          error: error,
+        });
+      } else if (result) {
+        const refreshQuery = `SELECT * FROM inq_message WHERE Inq_ID ='${body.Inq_ID}'`;
+        db.query(refreshQuery, async (error, result) => {
+          if (error) {
+            res.status(400).json({
+              message: "Somthing went wrong in refreshing..!",
+              error: error,
+            });
+          } else if (result) {
+            res.status(201).json({
+              message: "Message Created ..!",
+              payload: result,
+            });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+app.post("/api/inqMsg/updateMessage", (req, res) => {
+  try {
+    const body = req.body;
+    const updateQuery = `UPDATE inq_message SET Message='${body.message}' WHERE Msg_ID ='${body.Msg_ID}'`;
+    db.query(updateQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in updating..!",
+          error: error,
+        });
+      } else if (result) {
+        const refreshQuery = `SELECT * FROM inq_message WHERE Inq_ID ='${body.Inq_ID}'`;
+        db.query(refreshQuery, async (error, result) => {
+          if (error) {
+            res.status(400).json({
+              message: "Somthing went wrong in refreshing..!",
+              error: error,
+            });
+          } else if (result.length > 0) {
+            res.status(200).json({
+              message: `Message update successfully ..!`,
+              payload: result,
+            });
+          } else {
+            res.status(401).json({
+              message: `No data found..!`,
+            });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+app.post("/api/inqMsg/deleteMessage", (req, res) => {
+  try {
+    const data = req.body;
+    const deleteQuery = `DELETE FROM inq_message WHERE Msg_ID = '${data.Msg_ID}'`;
+    db.query(deleteQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in deleting..!",
+          error: error,
+        });
+      } else if (result) {
+        const refreshQuery = `SELECT * FROM inq_message WHERE Inq_ID ='${data.Inq_ID}'`;
+        db.query(refreshQuery, async (error, result) => {
+          if (error) {
+            res.status(400).json({
+              message: "Somthing went wrong in refreshing..!",
+              error: error,
+            });
+          } else if (result.length > 0) {
+            res.status(200).json({
+              message: `Message deleted successfully ..!`,
+              payload: result,
+            });
+          } else {
+            res.status(401).json({
+              message: `No data found..!`,
+            });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+
 
 

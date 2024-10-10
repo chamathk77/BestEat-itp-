@@ -25,8 +25,7 @@ import "../src/Screens/Admin/Transport/styles.css";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
-import Inquiries from "../src/Screens/Admin/Customer Care/inquiries";
-import InquiryChat from "../src/Screens/Admin/Customer Care/inquiryChat";
+
 
 import Employee from "./Screens/Admin/EmployeeManagement/Employee";
 import CreateEmployee from "./Screens/Admin/EmployeeManagement/createEmployee";
@@ -38,6 +37,11 @@ import DashboardChart from "./Screens/Admin/InventoryManagement/DashboardChart";
 import DisplayItem from "./Screens/Admin/InventoryManagement/DisplayItem";
 import AddItem from "./Screens/Admin/InventoryManagement/AddItem";
 import UpdateItem from "./Screens/Admin/InventoryManagement/UpdateItem";
+
+
+import Inquiries from "../src/Screens/Admin/Customer Care/inquiries";
+import InquiryChat from "../src/Screens/Admin/Customer Care/inquiryChat";
+import Feedbacks from "./Screens/Admin/Customer Care/Feedbacks";
 
 const App = () => {
   return (
@@ -106,6 +110,13 @@ const App = () => {
           <Route path="/admin/addinventory" element={<AddItem />} />
           <Route path="/admin/update/:id" element={<UpdateItem />} />
           {/* end of the savindi's */}
+
+
+          {/* dasith */}
+          <Route path="/inquiries" element={<Inquiries />} />
+          <Route path="/inquiryChat/:inq_ID" element={<InquiryChat />} />
+          <Route path="/feedbacks" element={<Feedbacks />} />
+
 
         </Routes>
       </Router>
