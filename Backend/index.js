@@ -773,7 +773,7 @@ app.get("/employee/display", (req, res) => {
   });
 });
 
-app.post('employee/create', (req, res) => {  
+app.post('/employee/creates', (req, res) => {  
   const sql = "INSERT INTO employee (`id`, `Name`, `Address`, `Phoneno`, `Email`) VALUES (?)";
 
   const values = [
@@ -782,6 +782,7 @@ app.post('employee/create', (req, res) => {
       req.body.address,
       req.body.phone,
       req.body.email,
+     
   ];
   db.query(sql, [values], (err) => {
       if (err) {
@@ -824,3 +825,30 @@ app.delete('/delete/employee/:id', (req, res) => {
       return res.json("Employee deleted successfully");
   });
 });
+
+// time shecule------------
+
+app.put('/employee/updateshedule/:id', (req, res) => {
+  const employeeId = req.params.id;
+  const { week_start_date, start_time, end_time } = req.body;
+
+  // SQL query to update the schedule for the specific employee
+  const sql = `
+    UPDATE employee 
+    SET 
+      week_start_date = ?, 
+      start_time = ?, 
+      end_time = ? 
+    WHERE id = ?
+  `;
+
+  db.query(sql, [week_start_date, start_time, end_time, employeeId], (err, result) => {
+    if (err) {
+      console.error("Error updating schedule:", err);
+      return res.status(500).json({ error: "Error updating schedule" });
+    }
+    return res.json({ message: "Schedule updated successfully" });
+  });
+});
+
+

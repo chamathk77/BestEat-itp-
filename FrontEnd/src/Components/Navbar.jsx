@@ -9,7 +9,7 @@ import {
 import { BsFillCartFill, BsFillSafeFill } from "react-icons/bs";
 import { TbTruckDelivery } from "react-icons/tb";
 import { FaUserFriends, FaWallet } from "react-icons/fa";
-import { MdLogout,MdVerifiedUser } from "react-icons/md";
+import { MdLogout, MdVerifiedUser } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -34,7 +34,6 @@ const Navbar = () => {
       itemCount += item.qty;
     });
     setCartCount(itemCount);
-
   }, [cart]);
 
   useEffect(() => {
@@ -211,8 +210,7 @@ const Navbar = () => {
                 Orders
               </button>
             </li>
-     
-      
+
             <li className="text-xl py-4 flex">
               <button
                 onClick={() => handleNavigate("/promotions")}
@@ -232,16 +230,6 @@ const Navbar = () => {
               </button>
             </li>
 
-            <li className="text-xl py-4 flex">
-              <button
-                onClick={() => handleNavigate("/favourites")}
-                className="flex items-center"
-              >
-                <MdLogout size={25} className="mr-4" />
-                Logout
-              </button>
-            </li>
-        
             {adminLogin && (
               <li className="text-xl py-4 flex">
                 <button
@@ -253,6 +241,16 @@ const Navbar = () => {
                 </button>
               </li>
             )}
+
+            <li className="text-xl py-4 flex">
+              <button
+                onClick={() => handleNavigate("/")}
+                className="flex items-center"
+              >
+                <MdLogout size={25} className="mr-4" />
+                Logout
+              </button>
+            </li>
           </ul>
         </nav>
       </div>
