@@ -1,91 +1,225 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-function AddItem(){
-
-  const [item,setItem]= useState({
-    name:"",
-    category:"",
-    unit_price:null,
-    quantity:null,
+function AddItem() {
+  const [item, setItem] = useState({
+    name: "",
+    category: "",
+    unit_price: "",
+    quantity: "",
+    expire_date: "",
   });
 
-  const navigate = useNavigate()
+  const [errors, setErrors] = useState({
+    unit_price: "",
+    quantity: "",
+  });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setItem((prev) => ({...prev, [e.target.name]: e.target.value}));
+    setItem((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleClick = async e =>{
-    e.preventDefault()
-    try{
-      await axios.post("http://localhost:8800/items",item)
-      navigate("/admin/displayinventory")}
-      catch(err){
-        console.log(err)
+  const validate = () => {
+    let valid = true;
+    let tempErrors = { unit_price: "", quantity: "" };
+
+    if (item.unit_price < 0) {
+      tempErrors.unit_price = "Unit Price cannot be a negative value.";
+      valid = false;
+    }
+
+    if (item.quantity < 0) {
+      tempErrors.quantity = "Quantity cannot be a negative value.";
+      valid = false;
+    }
+
+    setErrors(tempErrors);
+    return valid;
+  };
+
+  const handleClick = async (e) => {
+    e.preventDefault();
+
+    if (validate()) {
+      try {
+        await axios.post("http://localhost:8800/items", item);
+        navigate("/admin/displayinventory");
+      } catch (err) {
+        console.log(err);
       }
     }
-  
+  };
 
-  console.log(item)
-   return(
-    <div >
-      <nav class="navbar">
-        <div class="nav-container">
-          <button class="nav-button" onClick={() => navigate("/admin/displayinventory")}>
+  return (
+    <div>
+      <nav style={{ backgroundColor: "#b1acac", padding: "10px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            maxWidth: "1200px",
+            margin: "10px",
+          }}
+        >
+          <button
+            style={{
+              backgroundColor: "#1d1e1e",
+              color: "#fff",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "16px",
+              marginRight: "10px",
+              transition: "background-color 0.3s ease",
+            }}
+            onClick={() => navigate("/admin/displayinventory")}
+          >
             Display Items
           </button>
-          <button class="nav-button" onClick={() => navigate("/admin/update/:id")}>
+          <button
+            style={{
+              backgroundColor: "#1d1e1e",
+              color: "#fff",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "16px",
+              marginRight: "10px",
+              transition: "background-color 0.3s ease",
+            }}
+            onClick={() => navigate("/admin/update/:id")}
+          >
             Update Items
           </button>
         </div>
       </nav>
-      <div className="center-container">
-      <div className="add-item">
-      <h1 className="title">Add New Item</h1>
-      <form >
-      <label className="lable">Item Name
-        <div className="mb-3">
-          <input className="input" type="text" placeholder="name"  onChange={handleChange} value={item.name} name="name"/>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          backgroundColor: "#f8f9fa",
+          marginBottom: "100px",
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: "#ffffff",
+            padding: "20px",
+            borderRadius: "8px",
+            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+            width: "350px",
+            border: "1px solid #ccc",
+          }}
+        >
+          <h1 style={{ textAlign: "center", fontWeight: "bold", marginBottom: "15px" }}>
+            Add New Item
+          </h1>
+          <form>
+            <label style={{ fontWeight: "bold" }}>
+              Item Name
+              <div style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
+                <input
+                  style={{ padding: "10px", borderRadius: "4px", border: "1px solid #ced4da", fontSize: "14px" }}
+                  type="text"
+                  placeholder="name"
+                  onChange={handleChange}
+                  value={item.name}
+                  name="name"
+                />
+              </div>
+            </label>
+
+            <label style={{ fontWeight: "bold" }}>
+              Category
+              <div style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
+                <select
+                  style={{ padding: "10px", borderRadius: "4px", border: "1px solid #ced4da", fontSize: "14px" }}
+                  name="category"
+                  value={item.category}
+                  onChange={handleChange}
+                >
+                  <option value="Blank">Select</option>
+                  <option value="Dairy">Dairy</option>
+                  <option value="Meat">Meat</option>
+                  <option value="Spices">Spices</option>
+                  <option value="Basic">Basic</option>
+                </select>
+              </div>
+            </label>
+
+            <label style={{ fontWeight: "bold" }}>
+              Unit Price
+              <div style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
+                <input
+                  style={{ padding: "10px", borderRadius: "4px", border: "1px solid #ced4da", fontSize: "14px" }}
+                  type="number"
+                  placeholder="Unit Price"
+                  onChange={handleChange}
+                  value={item.unit_price}
+                  name="unit_price"
+                />
+                {errors.unit_price && <p style={{ color: "red" }}>{errors.unit_price}</p>}
+              </div>
+            </label>
+
+            <label style={{ fontWeight: "bold" }}>
+              Maximum Quantity
+              <div style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
+                <input
+                  style={{ padding: "10px", borderRadius: "4px", border: "1px solid #ced4da", fontSize: "14px" }}
+                  type="number"
+                  placeholder="Max Quantity"
+                  onChange={handleChange}
+                  value={item.quantity}
+                  name="quantity"
+                />
+                {errors.quantity && <p style={{ color: "red" }}>{errors.quantity}</p>}
+              </div>
+            </label>
+
+            <label style={{ fontWeight: "bold" }}>
+              Expire Date
+              <div style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
+                <input
+                  style={{ padding: "10px", borderRadius: "4px", border: "1px solid #ced4da", fontSize: "14px" }}
+                  type="date"
+                  placeholder="Expire date"
+                  onChange={handleChange}
+                  value={item.expire_date}
+                  name="expire_date"
+                />
+              </div>
+            </label>
+
+            <button
+              style={{
+                backgroundColor: "#281bdc",
+                borderColor: "#000",
+                padding: "10px 20px",
+                fontSize: "14px",
+                borderRadius: "4px",
+                color: "#ffffff",
+                display: "block",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+              onClick={handleClick}
+            >
+              Add
+            </button>
+          </form>
         </div>
-      </label>
-
-      <label className="lable">Category
-        <div className="mb-3">
-          <select name="category" className="input" placeholder="Category" value={item.category} onChange={handleChange}>
-            <option value="Blank">Select</option>
-            <option value="Dairy">Dairy</option>
-            <option value="Meat">Meat</option>
-            <option value="Spices">Spices</option>
-            <option value="Basic">Basic</option>
-          </select>
-        </div>
-      </label>
-
-      <label className="lable">Unit Price
-        <div className="mb-3">
-          <input className="input" type="number" placeholder="Unit Price"  onChange={handleChange} value={item.unit_price} name="unit_price"/></div>
-      </label>
-
-      <label className="lable">Maximum Quantity
-        <div className="mb-3">
-          <input className="input" type="number" placeholder="Max Quantity"  onChange={handleChange}  value={item.quantity} name="quantity"/></div>
-      </label>
-
-      <label className="lable">Expire Date
-        <div className="mb-3">
-          <input className="input" type="date" placeholder="Expire date"  onChange={handleChange}  value={item.expire_date} name="expire_date"/></div>
-      </label>
-      
-
-      <button className="add" onClick={handleClick}>Add</button>
-      </form>
-      </div>
       </div>
     </div>
-   );
+  );
 }
- 
 
-export default AddItem
+export default AddItem;

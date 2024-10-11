@@ -43,6 +43,12 @@ import Inquiries from "../src/Screens/Admin/Customer Care/inquiries";
 import InquiryChat from "../src/Screens/Admin/Customer Care/inquiryChat";
 import Feedbacks from "./Screens/Admin/Customer Care/Feedbacks";
 
+import  AddFinance  from "./Screens/Admin/FinancialManagement/Add";
+import  UpdateFinance  from "./Screens/Admin/FinancialManagement/Update";
+import  DisplayFinance  from "./Screens/Admin/FinancialManagement/Display";
+import ForecastFinance from "./Screens/Admin/FinancialManagement/Forecast";
+import InvoiceListFinance from "./Screens/Admin/FinancialManagement/InvoiceList";
+
 const App = () => {
   return (
     <Provider store={store}>
@@ -116,6 +122,14 @@ const App = () => {
           <Route path="/inquiries" element={<Inquiries />} />
           <Route path="/inquiryChat/:inq_ID" element={<InquiryChat />} />
           <Route path="/feedbacks" element={<Feedbacks />} />
+
+
+          {/* jayani */}
+          <Route path="/admin/finance/add" element={< AddFinance/>} />
+          <Route path="/admin/finance/update/:id" element={< UpdateFinance/>} />
+          <Route path="/admin/finance/display" element={< DisplayFinance/>} />
+          <Route path="/admin/finance/forecast" element={<ForecastFinance />} /> {/* Add this line */}
+          <Route path="/admin/finance/invoicelist" element={<InvoiceListFinance />} /> 
 
 
         </Routes>

@@ -10,6 +10,7 @@ import "jspdf-autotable";
 function Employee() {
   const navigate = useNavigate();
   const [employee, setEmployee] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -17,7 +18,6 @@ function Employee() {
       .get("http://localhost:8800/employee/display")
       .then((res) => {
         setEmployee(res.data);
-        console.log(res.data);
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
@@ -51,9 +51,15 @@ function Employee() {
     doc.save("employee_report.pdf");
   };
 
+  // Filter employees by the search term
+  const filteredEmployees = employee.filter((emp) =>
+    emp.id.toString().includes(searchTerm)
+  );
+
   return (
     <div className="d-flex vh-100 bg-light justify-content-center align-items-center">
       <div className="w-75 p-4 rounded shadow-lg" style={{ backgroundColor: "white" }}>
+        {/* Header with buttons */}
         <div className="d-flex justify-content-between mb-4">
           <div>
             <Link to="/employee/create" className="btn" style={{ backgroundColor: "orange", color: "white" }}>
@@ -74,53 +80,69 @@ function Employee() {
             <h4>Total Employees: {employee.length}</h4>
           </div>
         </div>
-        <table className="table table-bordered">
-          <thead style={{ backgroundColor: "orange", color: "white" }}>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Address</th>
-              <th>Phone</th>
-              <th>Email</th>
-              <th className="action-column">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {employee.map((data, i) => (
-              <tr key={i}>
-                <td>{data["id"]}</td>
-                <td>{data["Name"]}</td>
-                <td>{data["Address"]}</td>
-                <td>{data["Phoneno"]}</td>
-                <td>{data["Email"]}</td>
-                <td className="action-column d-flex" style={{ gap: "10px" }}>
-                  <button
-                    onClick={() => {
-                      navigate(`/employee/update/${data.id}`);
-                      dispatch(Set_Update_Employee({
-                        id: data.id,
-                        name: data.Name,
-                        email: data.Email,
-                        address: data.Address,
-                        phoneno: data.Phoneno,
-                      }));
-                    }}
-                    className="btn"
-                    style={{ backgroundColor: "orange", color: "white" }}
-                  >
-                    UPDATE
-                  </button>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => handleDelete(data.id)}
-                  >
-                    DELETE
-                  </button>
-                </td>
+
+        {/* Search bar */}
+        <div className="mb-4">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search by Employee ID"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ borderRadius: "20px", padding: "10px" }} // Modern style
+          />
+        </div>
+
+        {/* Scrollable Table Container */}
+        <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+          <table className="table table-bordered">
+            <thead style={{ backgroundColor: "orange", color: "white" }}>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th className="action-column">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredEmployees.map((data, i) => (
+                <tr key={i}>
+                  <td>{data["id"]}</td>
+                  <td>{data["Name"]}</td>
+                  <td>{data["Address"]}</td>
+                  <td>{data["Phoneno"]}</td>
+                  <td>{data["Email"]}</td>
+                  <td className="action-column d-flex" style={{ gap: "10px" }}>
+                    <button
+                      onClick={() => {
+                        navigate(`/employee/update/${data.id}`);
+                        dispatch(Set_Update_Employee({
+                          id: data.id,
+                          name: data.Name,
+                          email: data.Email,
+                          address: data.Address,
+                          phoneno: data.Phoneno,
+                        }));
+                      }}
+                      className="btn"
+                      style={{ backgroundColor: "orange", color: "white" }}
+                    >
+                      UPDATE
+                    </button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => handleDelete(data.id)}
+                    >
+                      DELETE
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

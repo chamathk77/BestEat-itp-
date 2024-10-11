@@ -8,7 +8,7 @@ export const AddNewMsg = (form) => {
     return async (dispatch) => {
       dispatch({ type: msgConstants.CREATE_MSG_REQUEST });
       try {
-        const res = await axios.post("http://localhost:5005/api/inqMsg/createMessage", form);
+        const res = await axios.post("http://localhost:8800/api/inqMsg/createMessage", form);
   
         if (res.status === 201) {
           dispatch({
@@ -38,7 +38,7 @@ export const deleteMsg = (form) => {
     return async (dispatch) => {
       dispatch({ type: msgConstants.DELETE_MSG_REQUEST });
       try {
-        const res = await axios.post("http://localhost:5005/api/inqMsg/deleteMessage", form);  
+        const res = await axios.post("http://localhost:8800/api/inqMsg/deleteMessage", form);  
         if (res.status === 200) {
           dispatch({
             type: msgConstants.DELETE_MSG_SUCCESS,
@@ -68,7 +68,7 @@ export const getMsgById = (form) => {
       dispatch({ type: msgConstants.FETCH_MSG_REQUEST });
   
       try {
-        const res = await axios.post("http://localhost:5005/api/inqMsg/getAll", form);
+        const res = await axios.post("http://localhost:8800/api/inqMsg/getAll", form);
         if (res.status === 200) {
           dispatch({
             type: msgConstants.FETCH_MSG_SUCCESS,
@@ -97,7 +97,7 @@ export const updateMsg = (form) => {
       dispatch({ type: msgConstants.UPDATE_MSG_REQUEST });
   
       try {
-        const res = await axios.post("http://localhost:5005/api/inqMsg/updateMessage", form);
+        const res = await axios.post("http://localhost:8800/api/inqMsg/updateMessage", form);
         if (res.status === 200) {
           dispatch({
             type: msgConstants.UPDATE_MSG_SUCCESS,

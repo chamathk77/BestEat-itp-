@@ -11,6 +11,8 @@ function AdminLogin() {
   const [alertDescription, setAlertDescription] = useState("");
   const [alertTopic, setAlertTopic] = useState("");
   const [buttonCount, setButtonCount] = useState(1);
+  const [positiveButton, setPositiveButton] = useState(false);
+  const [negartiveButton, setNegartiveButton] = useState(false);
 
   const username = localStorage.getItem("username");
 
@@ -29,16 +31,24 @@ function AdminLogin() {
     } else if (item.id === 4 && firstTwoChars === item.code) {
       navigate("/inquiries");
     } else if (item.id === 5 && firstTwoChars === item.code) {
+      navigate("/admin/finance/display");
     } else if (item.id === 6 && firstTwoChars === item.code) {
       navigate("/admin/dashboardchart");
     } else if (item.id === 7 && firstTwoChars === item.code) {
     } else if (item.id === 8 && firstTwoChars === item.code) {
     } else if (item.id === 9 && firstTwoChars === item.code) {
     } else {
+      // setAlertTopic("Error");
+      // setAlertDescription("This is Restricted\nAsk Admin for Permission");
+      // setShowAlert(true);
+      // setButtonCount(1);
+
       setAlertTopic("Error");
       setAlertDescription("This is Restricted\nAsk Admin for Permission");
-      setShowAlert(true);
       setButtonCount(1);
+      setShowAlert(true);
+      setPositiveButton(false);
+      setNegartiveButton(true);
     }
   };
 
@@ -56,6 +66,7 @@ function AdminLogin() {
         Welcome {username} to Admin Site
       </h1>
       {/* Alert */}
+
       {showAlert && (
         <CustomAlert
           alertvisible={showAlert}
@@ -64,6 +75,8 @@ function AdminLogin() {
           alertDescription={alertDescription}
           alertTitle={alertTopic}
           buttonCount={buttonCount}
+          positiveButton={positiveButton}
+          negartiveButton={negartiveButton}
         />
       )}
       {/* Category */}

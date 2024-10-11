@@ -1,24 +1,23 @@
-import React,{useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 
-function UpdateItem(){
-
-  const [item,setItem]= useState({
-    name:"",
-    category:"",
-    unit_price:null,
-    quantity:null,
-    rquantity:null,
+function UpdateItem() {
+  const [item, setItem] = useState({
+    name: "",
+    category: "",
+    unit_price: null,
+    quantity: null,
+    rquantity: null,
+    expire_date: "",
   });
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  const navigate = useNavigate()
-  const location = useLocation()
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const itemId = location.pathname.split("/")[3];
-
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -33,94 +32,261 @@ function UpdateItem(){
     fetchItem();
   }, [itemId]);
 
-
   const handleChange = (e) => {
-    setItem((prev) => ({...prev, [e.target.name]: e.target.value}));
+    setItem((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleClick = async e =>{
+  const handleClick = async (e) => {
     e.preventDefault();
 
+    // Validations
     if (parseInt(item.rquantity) > parseInt(item.quantity)) {
-      setErrorMessage("Remaining quantity cannot exceed the total quantity.");
-      return; 
+      setErrorMessage("Order quantity cannot exceed the total quantity.");
+      return;
     }
 
-    try{
-      await axios.put(`http://localhost:8800/items/${itemId}`,item)
-      navigate("/admin/displayinventory")}
-      catch(err){
-        console.log(err)
-      }
+    if (parseInt(item.rquantity) < 0) {
+      setErrorMessage("Order quantity cannot be a negative value.");
+      return;
     }
-  
 
-  console.log(item)
-   return(
-    <div >
-      <nav class="navbar">
-        <div class="nav-container">
-          <button class="nav-button" onClick={() => navigate("/admin/displayinventory")}>
+    if (parseInt(item.quantity) < 0) {
+      setErrorMessage("Max quantity cannot be a negative value.");
+      return;
+    }
+
+    if (parseFloat(item.unit_price) < 0) {
+      setErrorMessage("Unit price cannot be a negative value.");
+      return;
+    }
+
+    try {
+      await axios.put(`http://localhost:8800/items/${itemId}`, item);
+      navigate("/admin/displayinventory");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  return (
+    <div>
+      <nav
+        style={{
+          backgroundColor: "#b1acac",
+          padding: "10px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            maxWidth: "1200px",
+          }}
+        >
+          <button
+            style={{
+              backgroundColor: "#1d1e1e",
+              color: "#fff",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "16px",
+              marginRight: "10px",
+            }}
+            onClick={() => navigate("/admin/displayinventory")}
+          >
             Display Items
           </button>
-          <button class="nav-button" onClick={() => navigate("/admin/addinventory")}>
+          <button
+            style={{
+              backgroundColor: "#1d1e1e",
+              color: "#fff",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "16px",
+              marginLeft: "0px",
+            }}
+            onClick={() => navigate("/admin/addinventory")}
+          >
             Update Items
           </button>
         </div>
       </nav>
-      <div className="center-container">
-      <div className="add-item">
-      <h1 className="title">Update Item</h1>
-      <form >
-      <label className="lable">Item Name
-        <div className="mb-3">
-          <input className="input" type="text" placeholder="name"  onChange={handleChange} value={item.name} name="name"/>
-        </div>
-      </label>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          backgroundColor: "#f8f9fa",
+          marginBottom: "100px",
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: "#ffffff",
+            padding: "20px",
+            borderRadius: "8px",
+            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+            width: "350px",
+            border: "1px solid #ccc",
+          }}
+        >
+          <h1 style={{ textAlign: "center", fontWeight: "bold", marginBottom: "15px" }}>
+            Update Item
+          </h1>
+          <form>
+            <label style={{ fontWeight: "bold" }}>
+              Item Name
+              <div style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
+                <input
+                  style={{
+                    fontWeight: "lighter",
+                    padding: "10px",
+                    borderRadius: "4px",
+                    border: "1px solid #ced4da",
+                    fontSize: "14px",
+                  }}
+                  type="text"
+                  placeholder="name"
+                  onChange={handleChange}
+                  value={item.name}
+                  name="name"
+                />
+              </div>
+            </label>
 
-      <label className="lable">Category
-        <div className="mb-3">
-          <select name="category" className="input" placeholder="Category" value={item.category} onChange={handleChange}>
-            <option value="Blank">Select</option>
-            <option value="Dairy">Dairy</option>
-            <option value="Meat">Meat</option>
-            <option value="Spices">Spices</option>
-            <option value="Basic">Basic</option>
-          </select>
-        </div>
-      </label>
+            <label style={{ fontWeight: "bold" }}>
+              Category
+              <div style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
+                <select
+                  style={{
+                    fontWeight: "lighter",
+                    padding: "10px",
+                    borderRadius: "4px",
+                    border: "1px solid #ced4da",
+                    fontSize: "14px",
+                  }}
+                  name="category"
+                  placeholder="Category"
+                  value={item.category}
+                  onChange={handleChange}
+                >
+                  <option value="Blank">Select</option>
+                  <option value="Dairy">Dairy</option>
+                  <option value="Meat">Meat</option>
+                  <option value="Spices">Spices</option>
+                  <option value="Basic">Basic</option>
+                </select>
+              </div>
+            </label>
 
-      <label className="lable">Unit Price
-        <div className="mb-3">
-          <input className="input" type="number" placeholder="Unit Price"  onChange={handleChange} value={item.unit_price} name="unit_price"/></div>
-      </label>
+            <label style={{ fontWeight: "bold" }}>
+              Unit Price
+              <div style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
+                <input
+                  style={{
+                    fontWeight: "lighter",
+                    padding: "10px",
+                    borderRadius: "4px",
+                    border: "1px solid #ced4da",
+                    fontSize: "14px",
+                  }}
+                  type="number"
+                  placeholder="Unit Price"
+                  onChange={handleChange}
+                  value={item.unit_price}
+                  name="unit_price"
+                />
+              </div>
+            </label>
 
-      <label className="lable">Maximum Quantity
-        <div className="mb-3">
-          <input className="input" type="number" placeholder="Max Quantity"  onChange={handleChange}  value={item.quantity} name="quantity"/></div>
-      </label>
+            <label style={{ fontWeight: "bold" }}>
+              Maximum Quantity
+              <div style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
+                <input
+                  style={{
+                    fontWeight: "lighter",
+                    padding: "10px",
+                    borderRadius: "4px",
+                    border: "1px solid #ced4da",
+                    fontSize: "14px",
+                  }}
+                  type="number"
+                  placeholder="Max Quantity"
+                  onChange={handleChange}
+                  value={item.quantity}
+                  name="quantity"
+                />
+              </div>
+            </label>
 
-      <label className="lable">Remaining Quantity
-        <div className="mb-3">
-          <input className="input" type="number" placeholder="Order Quantity"  onChange={handleChange}   value={item.rquantity} name="rquantity"/>
-        </div>
-      </label>
+            <label style={{ fontWeight: "bold" }}>
+              Order Quantity
+              <div style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
+                <input
+                  style={{
+                    fontWeight: "lighter",
+                    padding: "10px",
+                    borderRadius: "4px",
+                    border: "1px solid #ced4da",
+                    fontSize: "14px",
+                  }}
+                  type="number"
+                  placeholder="Remaining Quantity"
+                  onChange={handleChange}
+                  value={item.rquantity}
+                  name="rquantity"
+                />
+              </div>
+            </label>
 
-      <label className="lable">Expire Date
-        <div className="mb-3">
-          <input className="input" type="date" placeholder="Expire date"  onChange={handleChange}  value={item.expire_date} name="expire_date"/></div>
-      </label>
+            <label style={{ fontWeight: "bold" }}>
+              Expire Date
+              <div style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
+                <input
+                  style={{
+                    fontWeight: "lighter",
+                    padding: "10px",
+                    borderRadius: "4px",
+                    border: "1px solid #ced4da",
+                    fontSize: "14px",
+                  }}
+                  type="date"
+                  placeholder="Expire date"
+                  onChange={handleChange}
+                  value={item.expire_date}
+                  name="expire_date"
+                />
+              </div>
+            </label>
 
-            {/* error message if validation fails */}
             {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
 
-      <button className="add" onClick={handleClick}>Update</button>
-      </form>
-      </div>
+            <button
+              style={{
+                backgroundColor: "#281bdc",
+                borderColor: "#000",
+                padding: "10px 20px",
+                fontSize: "14px",
+                borderRadius: "4px",
+                color: "#ffffff",
+                display: "block",
+                margin: "0 auto",
+              }}
+              onClick={handleClick}
+            >
+              Update
+            </button>
+          </form>
+        </div>
       </div>
     </div>
-   );
+  );
 }
- 
 
 export default UpdateItem;

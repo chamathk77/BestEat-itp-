@@ -14,9 +14,39 @@ function AddFood() {
   const [alertDescription, setAlertDescription] = useState("");
   const [alertTopic, setAlertTopic] = useState("");
   const [buttonCount, setButtonCount] = useState(1);
+  const [positiveButton, setPositiveButton] = useState(false);
+  const [negartiveButton, setNegartiveButton] = useState(false);
+
+  const validateForm = () => {
+    if (!foodName || !foodCategory || !imageUrl || !price) {
+      setAlertTopic("Invalid Input");
+      setAlertDescription("Please fill out all fields.");
+      setButtonCount(1);
+      setShowAlert(true);
+      setNegartiveButton(true);
+      setPositiveButton(false);
+      return false;
+    }
+
+    if (isNaN(price) || price < 0) {
+      setAlertTopic("Invalid Input");
+      setAlertDescription("Please enter a valid price.");
+      setButtonCount(1);
+      setShowAlert(true);
+      setNegartiveButton(true);
+      setPositiveButton(false);
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
 
     const newFood = {
       name: foodName,
@@ -30,42 +60,49 @@ function AddFood() {
         "http://localhost:8800/admin/addfood",
         newFood
       );
-      console.log(
-        "Food added successfully 0000000000000000000000000000000000000000000:",
-        response.data
-      );
+      console.log("Food added successfully:", response.data);
+
       // Clear form fields after submission
       setFoodName("");
       setFoodCategory("");
       setImageUrl("");
       setPrice("");
 
-      navigator("/admin/displayfoodlist");
+      setAlertTopic("Success");
+      setAlertDescription("New food added successfully.");
+      setButtonCount(1);
+      setShowAlert(true);
+      setPositiveButton(true);
+      setNegartiveButton(false);
+
+      
     } catch (error) {
       console.error("Error adding food:", error);
 
       setAlertTopic("Error");
-      setAlertDescription("Something went wrong please try again ");
-      setShowAlert(true);
+      setAlertDescription("Server error. Please try again later.");
       setButtonCount(1);
+      setShowAlert(true);
+      setNegartiveButton(true);
+      setPositiveButton(false);
     }
   };
 
   const handlePositiveAction = () => {
-    // Handle the positive action here
     setShowAlert(false);
     console.log("Positive button clicked");
+
+   navigator("/admin/displayfoodlist");
   };
 
+  
   const handleNegativeAction = () => {
-    // Handle the negative action here
     setShowAlert(false);
-    console.log("Negative button clicked");
   };
 
   return (
     <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
-      {/* alert */}
+      {/* Alert */}
       {showAlert && (
         <CustomAlert
           alertvisible={showAlert}
@@ -74,6 +111,8 @@ function AddFood() {
           alertDescription={alertDescription}
           alertTitle={alertTopic}
           buttonCount={buttonCount}
+          positiveButton={positiveButton}
+          negartiveButton={negartiveButton}
         />
       )}
 
@@ -131,10 +170,7 @@ function AddFood() {
           </label>
           <select
             value={foodCategory}
-            onChange={(e) => {
-              console.log(e.target.value);
-              setFoodCategory(e.target.value);
-            }}
+            onChange={(e) => setFoodCategory(e.target.value)}
             style={{
               width: "100%",
               padding: "10px",

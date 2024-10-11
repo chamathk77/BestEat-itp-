@@ -9,7 +9,7 @@ export const fetchAllInq = () => {
       dispatch({ type: inqConstants.GETALL_INQ_REQUEST });
   
       try {
-        const res = await axios.get("http://localhost:5005/api/inquiry/getAll");
+        const res = await axios.get("http://localhost:8800/api/inquiry/getAll");
   
         if (res.status === 200) {
           dispatch({
@@ -39,7 +39,7 @@ export const deleteInq = (form) => {
       dispatch({ type: inqConstants.DELETE_INQ_REQUEST });
   
       try {
-        const res = await axios.post("http://localhost:5005/api/inquiry/deleteInquiry", form);
+        const res = await axios.post("http://localhost:8800/api/inquiry/deleteInquiry", form);
   
         if (res.status === 200) {
           dispatch({
@@ -70,7 +70,7 @@ export const getInquiryById = (form) => {
       dispatch({ type: inqConstants.GETONE_INQ_REQUEST });
   
       try {
-        const res = await axios.post("http://localhost:5005/api/inquiry/getById", form);
+        const res = await axios.post("http://localhost:8800/api/inquiry/getById", form);
   
         if (res.status === 200) {
           dispatch({
@@ -100,7 +100,7 @@ export const getInquiryById = (form) => {
       dispatch({ type: inqConstants.RESOLVE_INQ_REQUEST });
   
       try {
-        const res = await axios.post("http://localhost:5005/api/inquiry/resolveInq", form);
+        const res = await axios.post("http://localhost:8800/api/inquiry/resolveInq", form);
   
         if (res.status === 200) {
           dispatch({

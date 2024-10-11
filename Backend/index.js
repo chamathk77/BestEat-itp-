@@ -937,6 +937,135 @@ app.put('/employee/updateshedule/:id', (req, res) => {
 //--------------------------------- dasitha -----------------------------------------------------
 
 
+// 
+//---------------------------------------Dasiya's part Inq-----------------------------------//
+
+app.get("/api/inquiry/getAll", (req, res) => {
+  try {
+    const fetchQuery = "SELECT * FROM inquiry";
+    db.query(fetchQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in data fetching..!",
+          error: error,
+        });
+      } else {
+        if (result.length > 0) {
+          res.status(200).json({
+            message: "Inquiry fetched successfully ..!",
+            payload: result,
+          });
+        } else {
+          res.status(404).json({
+            message: "No data found..!",
+          });
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+app.post("/api/inquiry/deleteInquiry", (req, res) => {
+  try {
+    const data = req.body;
+    const deleteQuery = `DELETE FROM inquiry WHERE Inq_ID = '${data.inqId}'`;
+    db.query(deleteQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in deleting..!",
+          error: error,
+        });
+      } else if (result) {
+        const refresh = "SELECT * FROM inquiry";
+        db.query(refresh, async (error, result) => {
+          if (error) {
+            res.status(400).json({
+              message: "Somthing went wrong in refreshing..!",
+              error: error,
+            });
+          } else if (result.length > 0) {
+            res.status(200).json({
+              message: `Inquiry deleted successfully ..!`,
+              payload: result,
+            });
+          } else {
+            res.status(401).json({
+              message: `No data found..!`,
+            });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+app.post("/api/inquiry/getById", (req, res) => {
+  try {
+    const body = req.body;
+    const fetchQuery = `SELECT * FROM inquiry WHERE Inq_ID = '${body.InqID}'`;
+    db.query(fetchQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in data fetching..!",
+          error: error,
+        });
+      } else {
+        if (result.length > 0) {
+          res.status(200).json({
+            message: "Inquiry fetched successfully ..!",
+            payload: result,
+          });
+        } else {
+          res.status(404).json({
+            message: "No data found..!",
+          });
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+app.post("/api/inquiry/resolveInq", (req, res) => {
+  try {
+    const body = req.body;
+    const updateQuery = `UPDATE inquiry SET Status='Resolve' WHERE Inq_ID = '${body.Inq_ID}'`;
+    db.query(updateQuery, async (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Somthing went wrong in deleting..!",
+          error: error,
+        });
+      } else if (result) {
+        res.status(200).json({
+          message: `Inquiry resolved successfully ..!`,
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something Went Wrong!",
+      error: error,
+    });
+  }
+});
+
+//------------------inq msg (Dasiya's)-------------------------------//
+
 app.post("/api/inqMsg/getAll", (req, res) => {
   try {
     const fetchQuery = `SELECT * FROM inq_message WHERE Inq_ID ='${req.body.Inq_ID}'`;
@@ -1084,6 +1213,77 @@ app.post("/api/inqMsg/deleteMessage", (req, res) => {
   }
 });
 
+//--------------jayani-----------------
+// Get all transactions
+app.get("/admin/transactions", (req, res) => {
+  const q = "SELECT * FROM transactions";
+  db.query(q, (err, data) => {
+      if (err) return res.json(err);
+      return res.json(data);
+  });
+});
 
+// Add a transaction
+app.post("/admin/transactions/add", (req, res) => {
+  const q = "INSERT INTO transactions (`orderid`, `description`, `amount`, `date`, `paymentmethod`) VALUES (?)";
+  const values = [
+      req.body.orderid,
+      req.body.description,
+      req.body.amount,
+      req.body.date,
+      req.body.paymentmethod,
+  ];
+
+  console.log("------------------------------------", values);
+
+  db.query(q, [values], (err, data) => {
+      if (err) return res.json(err + '\n unsuccessfully');
+      return res.json("Transaction has been created successfully");
+  });
+});
+
+// Delete a transaction
+app.delete("/admin/transactions/:id", (req, res) => {
+  const transactionId = req.params.id;
+  const q = "DELETE FROM transactions WHERE id = ?";
+
+  db.query(q, [transactionId], (err, data) => {
+      if (err) return res.json(err);
+      return res.json("Transaction has been deleted successfully");
+  });
+});
+
+// Update a transaction
+app.put("/admin/transaction/:id", (req, res) => {
+  const transactionId = req.params.id;
+  const q = "UPDATE transactions SET `orderid`=?, `description`=?, `amount`=?, `date`=?, `paymentmethod`=? WHERE id =?";
+
+  console.log("-------------------------", transactionId);
+  const values = [
+      req.body.orderid,
+      req.body.description,
+      req.body.amount,
+      req.body.date,
+      req.body.paymentmethod,
+  ];
+
+  console.log("-------------------------", values);
+  
+  db.query(q, [...values, transactionId], (err, data) => {
+      if (err) return res.json(err);
+      return res.json("Transaction has been updated successfully");
+  });
+});
+
+// New endpoint to get historical transactions for forecasting
+app.get("/admin/transactions/history/:months", (req, res) => {
+  const months = parseInt(req.params.months, 10); // Get the number of months from URL
+  const q = "SELECT * FROM transactions WHERE date >= DATE_SUB(NOW(), INTERVAL ? MONTH)";
+
+  db.query(q, [months], (err, data) => {
+      if (err) return res.json(err);
+      return res.json(data); // Return the transactions for the specified period
+  });
+});
 
 

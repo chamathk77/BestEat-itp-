@@ -1,4 +1,4 @@
-import { msgConstants } from "../../Actions/constants";
+import {msgConstants} from '../Actions/constants'
 
 const initState = {
   msg: [],

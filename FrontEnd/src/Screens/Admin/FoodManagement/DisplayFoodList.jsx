@@ -20,6 +20,8 @@ function DisplayFoodList() {
   const [alertDescription, setAlertDescription] = useState("");
   const [alertTopic, setAlertTopic] = useState("");
   const [buttonCount, setButtonCount] = useState(1);
+  const [positiveButton, setPositiveButton] = useState(false);
+  const [negartiveButton, setNegartiveButton] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,11 +31,14 @@ function DisplayFoodList() {
         setFood(response.data);
         setFilterdData(response.data);
       } catch (error) {
+
         console.log("Error: ", error);
         setAlertTopic("Error");
-        setAlertDescription("Something went wrong, please try again");
+        setAlertDescription("Server Error");
+        setButtonCount(1);
         setShowAlert(true);
-        setButtonCount(2);
+        setNegartiveButton(true);
+        setPositiveButton(false);
       }
     };
     fetchData();
@@ -57,13 +62,32 @@ function DisplayFoodList() {
 
   const deleteBook = async (id) => {
     try {
+
+      console.log("Successfully deleted");
+      setAlertTopic("Success");
+      setAlertDescription("Food deleted successfully");
+      setButtonCount(1);
+      setShowAlert(true);
+      setNegartiveButton(true);
+      setPositiveButton(false);
+
+      setTimeout(() => {
+
+     
+        
+      }, 3000);
       await axios.delete(`http://localhost:8800/admin/fooddelete/${id}`);
       window.location.reload();
     } catch (error) {
+
+      console.log("Error: ", error);
       setAlertTopic("Error");
-      setAlertDescription("Something went wrong, please try again");
-      setShowAlert(true);
+      setAlertDescription("Server Error");
       setButtonCount(1);
+      setShowAlert(true);
+      setNegartiveButton(true);
+      setPositiveButton(false);
+      
       console.log(error);
     }
   };
@@ -107,12 +131,14 @@ const generatePDF = () => {
       {/* Alert */}
       {showAlert && (
         <CustomAlert
-          alertvisible={showAlert}
-          onPositiveAction={handlePositiveAction}
-          onNegativeAction={handleNegativeAction}
-          alertDescription={alertDescription}
-          alertTitle={alertTopic}
-          buttonCount={buttonCount}
+        alertvisible={showAlert}
+        onPositiveAction={handlePositiveAction}
+        onNegativeAction={handleNegativeAction}
+        alertDescription={alertDescription}
+        alertTitle={alertTopic}
+        buttonCount={buttonCount}
+        positiveButton={positiveButton}
+        negartiveButton={negartiveButton}
         />
       )}
 

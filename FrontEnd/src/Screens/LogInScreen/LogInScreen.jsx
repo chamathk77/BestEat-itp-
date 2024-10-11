@@ -16,6 +16,8 @@ function LoginPage() {
   const [alertDescription, setAlertDescription] = useState("");
   const [alertTopic, setAlertTopic] = useState("");
   const [buttonCount, setButtonCount] = useState(1);
+  const [positiveButton, setPositiveButton] = useState(false);
+  const [negartiveButton, setNegartiveButton] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,13 +60,18 @@ function LoginPage() {
       dispatch(UpdateUserName(username));
       localStorage.setItem("username", username);
       localStorage.setItem("userDetails", JSON.stringify(check_user));
+      localStorage.setItem("isadmin", check_user[0].is_admin);
       navigate("/homepage");
     } else {
       console.log("user invalid");
+
       setAlertTopic("Error");
       setAlertDescription("Invalid username or password");
-      setShowAlert(true);
       setButtonCount(1);
+      setShowAlert(true);
+      setNegartiveButton(true);
+      setPositiveButton(false);
+
       setUsername("");
       setPassword("");
     }
@@ -99,7 +106,8 @@ function LoginPage() {
         Welcome to Best Eats, where world-class food brings you back for more.
       </h2>
       {/* Alert */}
-      {showAlert && (
+    
+       {showAlert && (
         <CustomAlert
           alertvisible={showAlert}
           onPositiveAction={handlePositiveAction}
@@ -107,8 +115,11 @@ function LoginPage() {
           alertDescription={alertDescription}
           alertTitle={alertTopic}
           buttonCount={buttonCount}
+          positiveButton={positiveButton}
+          negartiveButton={negartiveButton}
         />
       )}
+   
       <div style={styles.formContainer}>
         <h2 style={styles.title}>Login</h2>
         <form onSubmit={handleLogin} style={styles.form}>

@@ -7,6 +7,8 @@ const CustomAlert = ({
   alertDescription,
   alertTitle,
   buttonCount,
+  positiveButton,
+  negartiveButton,
 }) => {
   const [showAlert, setShowAlert] = useState(alertvisible);
 
@@ -47,7 +49,18 @@ const CustomAlert = ({
               </div>
             )}
 
-            {buttonCount === 1 && (
+            {buttonCount === 1 && positiveButton == true && (
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <button
+                  onClick={() => onPositiveAction()}
+                  style={styles.positiveBtn}
+                >
+                  Okey
+                </button>
+              </div>
+            )}
+
+            {buttonCount === 1 && negartiveButton == true && (
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <button
                   onClick={() => onNegativeAction()}

@@ -7,7 +7,6 @@ import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 function CartList() {
-
   const navigate = useNavigate();
   const cart = useSelector((state) => state.Order.order.foodList);
   const dispatch = useDispatch();
@@ -20,11 +19,12 @@ function CartList() {
   const [discount, setDiscount] = useState(0); // State for discount
 
   const [deliveryCharges, setDeliveryCharges] = useState(100); // Set default delivery charges
-
   const [showAlert, setShowAlert] = useState(false);
   const [alertDescription, setAlertDescription] = useState("");
   const [alertTopic, setAlertTopic] = useState("");
   const [buttonCount, setButtonCount] = useState(1);
+  const [positiveButton, setPositiveButton] = useState(false);
+  const [negartiveButton, setNegartiveButton] = useState(false);
 
   useEffect(() => {
     Ispremium && setDiscount(8);
@@ -65,15 +65,23 @@ function CartList() {
         console.log("Order inserted: 2222222222222222222222222222", res.data);
 
         if (res.data) {
-          setAlertTopic("Success");
-          setAlertDescription("Order Added Successfully,Check Your Orders");
-          setShowAlert(true);
-          setButtonCount(1);
+          // setAlertTopic("Success");
+          // setAlertDescription("Order Added Successfully,Check Your Orders");
+          // setShowAlert(true);
+          // setButtonCount(1);
         }
-      
-    
-        navigate("/homepage");
-        window.location.reload();
+
+        setAlertTopic("Success");
+        setAlertDescription("Order Added Successfully,Check Your Orders");
+        setButtonCount(1);
+        setShowAlert(true);
+        setPositiveButton(true);
+        setNegartiveButton(false);
+
+        setTimeout(() => {
+          navigate("/homepage");
+          window.location.reload();
+        }, 2000);
       } catch (error) {
         // Set alert details in case of an error
         // setAlertTopic("Error");
@@ -122,6 +130,8 @@ function CartList() {
           alertDescription={alertDescription}
           alertTitle={alertTopic}
           buttonCount={buttonCount}
+          positiveButton={positiveButton}
+          negartiveButton={negartiveButton}
         />
       )}
       <h2 className="text-3xl font-bold text-center mb-6 text-orange-600">

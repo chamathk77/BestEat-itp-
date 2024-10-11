@@ -15,19 +15,26 @@ import { useSelector } from "react-redux";
 import { MdFeedback } from 'react-icons/md';
 
 const Navbar = () => {
+
+  
+  const username = localStorage.getItem("username");
+  const userDetails=localStorage.getItem("userDetails");
+  const isadmin=localStorage.getItem("isadmin");
+  
   const navigate = useNavigate();
   const [nav, setNav] = useState(false);
   const [delivery, setDelivery] = useState(true);
   const [pickup, setPickup] = useState(false);
-  const [adminLogin, setAdminLogin] = useState(false);
+  const [adminLogin, setAdminLogin] = useState();
   const [cartCount, setCartCount] = useState(0); // New state for cart count
 
-  const username = useSelector((state) => state.Login.LoginUser.UserName);
+  //const username = useSelector((state) => state.Login.LoginUser.UserName);
   const cart = useSelector((state) => state.Order.order.foodList);
+
 
   useEffect(() => {
     console.log(
-      "9999999999999999999999999999999999999999999999999999999999999"
+      "-----------------",isadmin
     );
 
     let itemCount = 0;
@@ -197,7 +204,7 @@ const Navbar = () => {
             cursor: "pointer",
           }}
         />
-        <h2 className="text-2xl p-4">
+        <h2 className="text-3xl p-2 ml-4  mt-2" >
           Best <span className="font-bold">Eats</span>
         </h2>
         <nav>
@@ -241,7 +248,7 @@ const Navbar = () => {
               </button>
             </li>
 
-            {adminLogin && (
+            {isadmin==1 && (
               <li className="text-xl py-4 flex">
                 <button
                   onClick={() => handleNavigate("/admin/dashboard")}
