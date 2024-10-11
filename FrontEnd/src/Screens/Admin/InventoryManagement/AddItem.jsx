@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from "react"; 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -67,7 +67,7 @@ function AddItem() {
         >
           <button
             style={{
-              backgroundColor: "#1d1e1e",
+              backgroundColor: "#ff9800",
               color: "#fff",
               border: "none",
               padding: "10px 20px",
@@ -83,7 +83,7 @@ function AddItem() {
           </button>
           <button
             style={{
-              backgroundColor: "#1d1e1e",
+              backgroundColor: "#ff9800",
               color: "#fff",
               border: "none",
               padding: "10px 20px",
@@ -137,6 +137,7 @@ function AddItem() {
               </div>
             </label>
 
+            {/* Move Category input here */}
             <label style={{ fontWeight: "bold" }}>
               Category
               <div style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
@@ -201,7 +202,7 @@ function AddItem() {
 
             <button
               style={{
-                backgroundColor: "#281bdc",
+                backgroundColor: "#ff9800",
                 borderColor: "#000",
                 padding: "10px 20px",
                 fontSize: "14px",

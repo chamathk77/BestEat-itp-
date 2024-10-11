@@ -161,37 +161,43 @@ const DashboardChart = () => {
           Warning: You have {alertCount} item(s) expiring in 3 days or less!
         </div>
       )}
-      
-      <div style={{ marginTop: '20px' }}>
-        <div style={{ marginBottom: '20px', width: '100%', height: '250px' }}> {/* Set width and height for the chart */}
+
+      {/* Flex container for chart and table */}
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginTop: '20px' }}>
+        {/* Chart Section */}
+        <div style={{ flex: 1, padding: '10px', marginRight: '20px', height: '400px' }}> {/* Adjust chart height */}
           <Bar data={data} options={options} />
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px', boxShadow: '0 1px 5px rgba(0,0,0,0.1)' }}>
-          <thead>
-            <tr>
-              <th style={{ padding: '12px', backgroundColor: '#ff9800', color: 'white', borderBottom: '2px solid #ccc' }}>Item Name</th>
-              <th style={{ padding: '12px', backgroundColor: '#ff9800', color: 'white', borderBottom: '2px solid #ccc' }}>Category</th>
-              <th style={{ padding: '12px', backgroundColor: '#ff9800', color: 'white', borderBottom: '2px solid #ccc' }}>Expiry Date</th>
-              <th style={{ padding: '12px', backgroundColor: '#ff9800', color: 'white', borderBottom: '2px solid #ccc' }}>Days Left</th>
-            </tr>
-          </thead>
-          <tbody>
-            {expiringItems.map(item => {
-              const expireDate = new Date(item.expire_date);
-              const today = new Date();
-              const daysLeft = Math.ceil((expireDate - today) / (1000 * 60 * 60 * 24));
+        
+        {/* Table Section */}
+        <div style={{ flex: 1, padding: '10px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', boxShadow: '0 1px 5px rgba(0,0,0,0.1)' }}>
+            <thead>
+              <tr>
+                <th style={{ padding: '12px', backgroundColor: '#ff9800', color: 'white', borderBottom: '2px solid #ccc' }}>Item Name</th>
+                <th style={{ padding: '12px', backgroundColor: '#ff9800', color: 'white', borderBottom: '2px solid #ccc' }}>Category</th>
+                <th style={{ padding: '12px', backgroundColor: '#ff9800', color: 'white', borderBottom: '2px solid #ccc' }}>Expiry Date</th>
+                <th style={{ padding: '12px', backgroundColor: '#ff9800', color: 'white', borderBottom: '2px solid #ccc' }}>Days Left</th>
+              </tr>
+            </thead>
+            <tbody>
+              {expiringItems.map(item => {
+                const expireDate = new Date(item.expire_date);
+                const today = new Date();
+                const daysLeft = Math.ceil((expireDate - today) / (1000 * 60 * 60 * 24));
 
-              return (
-                <tr key={item.item_id} style={{ borderBottom: '1px solid #ccc' }}>
-                  <td style={{ padding: '12px', borderBottom: '1px solid #ccc' }}>{item.name}</td>
-                  <td style={{ padding: '12px', borderBottom: '1px solid #ccc' }}>{item.category}</td>
-                  <td style={{ padding: '12px', borderBottom: '1px solid #ccc' }}>{expireDate.toLocaleDateString()}</td>
-                  <td style={{ padding: '12px', borderBottom: '1px solid #ccc', color: daysLeft < 3 ? 'red' : 'black' }}>{daysLeft}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                return (
+                  <tr key={item.item_id} style={{ borderBottom: '1px solid #ccc' }}>
+                    <td style={{ padding: '12px', borderBottom: '1px solid #ccc' }}>{item.name}</td>
+                    <td style={{ padding: '12px', borderBottom: '1px solid #ccc' }}>{item.category}</td>
+                    <td style={{ padding: '12px', borderBottom: '1px solid #ccc' }}>{expireDate.toLocaleDateString()}</td>
+                    <td style={{ padding: '12px', borderBottom: '1px solid #ccc', color: daysLeft < 3 ? 'red' : 'black', fontWeight: daysLeft < 3 ? 'bold' : 'normal' }}>{daysLeft}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

@@ -225,25 +225,6 @@ function UpdateItem() {
               </div>
             </label>
 
-            <label style={{ fontWeight: "bold" }}>
-              Order Quantity
-              <div style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
-                <input
-                  style={{
-                    fontWeight: "lighter",
-                    padding: "10px",
-                    borderRadius: "4px",
-                    border: "1px solid #ced4da",
-                    fontSize: "14px",
-                  }}
-                  type="number"
-                  placeholder="Remaining Quantity"
-                  onChange={handleChange}
-                  value={item.rquantity}
-                  name="rquantity"
-                />
-              </div>
-            </label>
 
             <label style={{ fontWeight: "bold" }}>
               Expire Date

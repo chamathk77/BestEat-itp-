@@ -1286,4 +1286,38 @@ app.get("/admin/transactions/history/:months", (req, res) => {
   });
 });
 
+//-----------------------------------------------------------
+
+// add customer sign up-----------
+
+app.post("/api/customers/addCustomer", (req, res) => {
+  try {
+    const body = req.body;
+    const insertQuery = `
+      INSERT INTO customers (username, first_name, last_name, email, phone_number, password, address, city) 
+      VALUES ('${body.username}', '${body.first_name}', '${body.last_name}', '${body.email}', '${body.phone_number}', '${body.password}', '${body.address}', '${body.city}')
+    `;
+    
+    db.query(insertQuery, (error, result) => {
+      if (error) {
+        res.status(400).json({
+          message: "Something went wrong in adding the customer!",
+          error: error,
+        });
+      } else {
+        res.status(200).json({
+          message: "Customer added successfully!",
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong on the server!",
+      error: error,
+    });
+  }
+});
+
+
+
 
